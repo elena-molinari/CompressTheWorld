@@ -2,6 +2,12 @@ const c = new AudioContext();
 let oscillator; // Variabile per memorizzare l'oscillatore
 let compressor;
 let state_comp = false;
+let df_th = -50;
+let df_knee = 40;
+let df_ratio = 12;
+let df_att = 0.003;
+let df_rel = 0.25; 
+
 
 function main() {
     c.resume(); // Assicurati che l'AudioContext sia attivo
@@ -47,11 +53,11 @@ function compOnOff(state_comp) {
 
 function createCompressor() {
     compressor = c.createDynamicsCompressor();
-    compressor.threshold.setValueAtTime(-50, c.currentTime);  // Imposta la soglia
-    compressor.knee.setValueAtTime(40, c.currentTime);       // Imposta il knee
-    compressor.ratio.setValueAtTime(12, c.currentTime);      // Imposta il rapporto di compressione
-    compressor.attack.setValueAtTime(0.003, c.currentTime);  // Imposta l'attacco
-    compressor.release.setValueAtTime(0.25, c.currentTime); // Imposta il rilascio
+    compressor.threshold.setValueAtTime(df_th, c.currentTime);  // Imposta la soglia
+    compressor.knee.setValueAtTime(df_knee, c.currentTime);       // Imposta il knee
+    compressor.ratio.setValueAtTime(df_ratio, c.currentTime);      // Imposta il rapporto di compressione
+    compressor.attack.setValueAtTime(df_att, c.currentTime);  // Imposta l'attacco
+    compressor.release.setValueAtTime(df_rel, c.currentTime); // Imposta il rilascio
 }
 
 function suspend() {
