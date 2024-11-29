@@ -23,6 +23,8 @@ body {
     align-items: center;
     justify-content: center;
     background-color: #ffffff;
+    margin-left: 15px ;
+margin-right: 15px ;
 }
 
 /* Stile per il contenitore dei parametri */
@@ -93,4 +95,29 @@ input[type="range"] {
 /* Cambia il colore quando si passa sopra gli elementi della tendina */
 .dropdown-content p:hover {
     background-color: #e0e0e0;
+}
+
+
+
+
+
+
+
+#uploadContainer {
+    text-align: center;
+    margin-top: 20px;
+}
+
+input[type="file"] {
+    margin: 10px 0;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+audio {
+    margin-top: 20px;
+    width: 300px;
 }

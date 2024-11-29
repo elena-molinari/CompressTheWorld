@@ -8,7 +8,8 @@
 <body> 
     
         <div class="top-half">
-            
+
+
             <div class="dropdown">
                 <button class="dropdown-btn" onclick="toggleDropdown()">+</button>
                 <div class="dropdown-content" id="dropdownContent">
@@ -17,6 +18,12 @@
 
                 </div>
             </div>
+
+            <div id="uploadContainer" style="display: none; margin-top: 20px;">
+                 <label for="audioFileInput">Carica un file audio:</label> 
+                 <input type="file" id="audioFileInput" accept="audio/*"> 
+                 <audio id="audioPlayer" controls style="display: none; margin-top: 20px;"></audio>    
+             </div>
             
 
 
