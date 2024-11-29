@@ -126,3 +126,61 @@ window.onclick = function(event) {
         }
     }
 };
+function uploadTrack() {
+    // Controlla se il contenitore è già stato creato
+    if (document.getElementById("dynamicUploadContainer")) {
+        return; // Se esiste già, non fare nulla
+    }
+
+    // Crea un contenitore dinamico
+    const uploadContainer = document.createElement("div");
+    uploadContainer.id = "dynamicUploadContainer";
+    uploadContainer.style.marginTop = "20px";
+    uploadContainer.style.textAlign = "center";
+
+    // Crea un'etichetta
+    const label = document.createElement("label");
+    label.htmlFor = "dynamicAudioFileInput";
+    label.textContent = "Carica un file audio:";
+    uploadContainer.appendChild(label);
+
+    // Crea un input file
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.id = "dynamicAudioFileInput";
+    fileInput.accept = "audio/*";
+    fileInput.style.margin = "10px 0";
+    fileInput.style.padding = "8px";
+    fileInput.style.fontSize = "14px";
+    fileInput.style.border = "1px solid #ccc";
+    fileInput.style.borderRadius = "4px";
+    fileInput.style.cursor = "pointer";
+    uploadContainer.appendChild(fileInput);
+
+    // Crea un player audio nascosto
+    const audioPlayer = document.createElement("audio");
+    audioPlayer.id = "dynamicAudioPlayer";
+    audioPlayer.controls = true;
+    audioPlayer.style.display = "none";
+    audioPlayer.style.marginTop = "20px";
+    audioPlayer.style.width = "300px";
+    uploadContainer.appendChild(audioPlayer);
+
+    // Aggiungi il contenitore alla pagina
+    document.body.appendChild(uploadContainer);
+
+    // Gestisci il caricamento del file
+    fileInput.addEventListener("change", function (event) {
+        const file = event.target.files[0];
+        if (file) {
+            // Crea un URL temporaneo per il file
+            const fileURL = URL.createObjectURL(file);
+
+            // Configura il player audio per riprodurre il file
+            audioPlayer.src = fileURL;
+            audioPlayer.style.display = "block";
+        } else {
+            alert("Nessun file audio selezionato!");
+        }
+    });
+}
