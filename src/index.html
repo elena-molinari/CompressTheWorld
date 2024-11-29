@@ -2,28 +2,43 @@
     <script
         src="script.js">
     </script>
-    
+    <link rel="stylesheet" href="style.css"> 
+
 </head>
-<body>
-    <button onclick="main()"> Start! </button>
-    <button onclick="suspend()"> Stop! </button>
-
-   <!-- <button onclick="compOn()"> Compression on</button>
-    <button onclick="compOff()"> Compression off</button>
-    -->
-
-    <button id ="toggle_comp" onclick="toggle_comp()">  Compression Off </button>
+<body> 
     
-    <div> 
-        <!-- utilizziamo una funzione per i range in modo tale da poter cambiare i valori dinamicamente , 
-         non ci saranno più ritardi perché i valori saranno applicati direttamente all'oggetto compressor in tempo reale. -->
-         <input type="range" min="-100" max="0" step="1" oninput="df_th=updateThreshold(this.value)"> Th </input>
-         <input type="range" min="1" max="20" step="1" oninput="df_ratio=updateRatio(this.value)"> Ratio </input>
-         <input type="range" min="0" max="40" step="5" oninput="df_knee = updateKnee(this.value)"> Knee </input>
-         <input type="range" min="0.003" max="1" step="0.01" oninput="df_att = updateAtt(this.value)"> Att </input>
-         <input type="range" min="0.25" max="1" step="0.01" oninput="df_rel = updateRel(this.value)"> Rel </input> 
-    </div>
+        <div class="top-half">
+            <div class="dropdown">
+                <button class="dropdown-btn" onclick="toggleDropdown()">+</button>
+                <div class="dropdown-content" id="dropdownContent">
+                    <p>Select track</p>
+                    <p>Upload track</p>
+                </div>
+            </div>
+            
 
+
+        </div>
+        <div class="bottom-half">
+
+            <div id="activate_comp">
+
+            <button  onclick="main()">Start!</button>
+            <button  onclick="suspend()">Stop!</button>
+            <button id="toggle_comp" onclick="toggle_comp()">Compression Off</button>
+            </div>
+
+            <div id="param_comp">
+                
+                <input type="range" min="-100" max="0" step="1" oninput="df_th=updateThreshold(this.value)"> Th </input>
+                <input type="range" min="1" max="20" step="1" oninput="df_ratio=updateRatio(this.value)"> Ratio </input>
+                <input type="range" min="0" max="40" step="5" oninput="df_knee = updateKnee(this.value)"> Knee </input>
+                <input type="range" min="0.003" max="1" step="0.01" oninput="df_att = updateAtt(this.value)"> Att </input>
+                <input type="range" min="0.25" max="1" step="0.01" oninput="df_rel = updateRel(this.value)"> Rel </input>
+            </div>
+        </div>
+
+    
 
 
     

@@ -109,3 +109,20 @@ function toggle_comp(){
         button.textContent = "Compression Off";  // Se il compressore è disattivo
     }
 }
+
+
+function toggleDropdown() {
+    const dropdown = document.getElementById("dropdownContent");
+    // Alterna tra visibile e nascosto
+    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+}
+
+// Opzionale: Chiudi la tendina quando si clicca al di fuori
+window.onclick = function(event) {
+    if (!event.target.matches('.dropdown-btn')) {
+        const dropdown = document.getElementById("dropdownContent");
+        if (dropdown.style.display === "block") {
+            dropdown.style.display = "none";
+        }
+    }
+};
