@@ -36,20 +36,12 @@ function suspend() {
     audioPlayer.pause();
    }
 
-/*
-function compOn() {
-    state_comp = true; // Imposta lo stato del compressore su "attivo"
-    compOnOff(state_comp); // Applica la modifica
-}
 
-// Funzione per disattivare la compressione
-function compOff() {
-    state_comp = false; // Imposta lo stato del compressore su "disattivo"
-    compOnOff(state_comp); // Applica la modifica
-}
 
-*/
 
+
+
+/*  finestra    */ 
 
 function uploadTrack() {
     const uploadContainer = document.getElementById("uploadContainer");
@@ -81,7 +73,6 @@ function uploadTrack() {
         }
     });
 }
-
 
 function selectTrack() {
     // Apri una nuova finestra
@@ -129,8 +120,26 @@ function selectTrack() {
     newWindow.document.close();
 }
 
+function toggleDropdown() {
+    const dropdown = document.getElementById("dropdownContent");
+    // Alterna tra visibile e nascosto
+    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+}
+
+// Opzionale: Chiudi la tendina quando si clicca al di fuori
+window.onclick = function(event) {
+    if (!event.target.matches('.dropdown-btn')) {
+        const dropdown = document.getElementById("dropdownContent");
+        if (dropdown.style.display === "block") {
+            dropdown.style.display = "none";
+        }
+    }
+};
 
 
+
+
+/*  compressore   */
 
 function compOnOff(state_comp) {
     if (state_comp) {
@@ -190,21 +199,9 @@ function toggle_comp(){
 }
 
 
-function toggleDropdown() {
-    const dropdown = document.getElementById("dropdownContent");
-    // Alterna tra visibile e nascosto
-    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
-}
 
-// Opzionale: Chiudi la tendina quando si clicca al di fuori
-window.onclick = function(event) {
-    if (!event.target.matches('.dropdown-btn')) {
-        const dropdown = document.getElementById("dropdownContent");
-        if (dropdown.style.display === "block") {
-            dropdown.style.display = "none";
-        }
-    }
-};
+
+
 
 
 
