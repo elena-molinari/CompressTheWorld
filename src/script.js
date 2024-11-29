@@ -126,6 +126,7 @@ window.onclick = function(event) {
         }
     }
 };
+
 function uploadTrack() {
     // Controlla se il contenitore è già stato creato
     if (document.getElementById("dynamicUploadContainer")) {
@@ -184,3 +185,51 @@ function uploadTrack() {
         }
     });
 }
+
+function selectTrack() {
+    // Apri una nuova finestra
+    const newWindow = window.open("", "_blank");
+
+    // Aggiungi il contenuto base della nuova pagina
+    newWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Select Track</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 0;
+                    padding: 20px;
+                    background-color: #f5f5f5;
+                }
+                h1 {
+                    text-align: center;
+                    color: #333;
+                }
+                .placeholder {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 80vh;
+                    color: #999;
+                    font-size: 18px;
+                }
+            </style>
+        </head>
+        <body>
+            <h1>Select Track</h1>
+            <div class="placeholder">
+                <p>This page is under construction. Add tracks dynamically here.</p>
+            </div>
+        </body>
+        </html>
+    `);
+
+    // Chiudi il documento per renderlo visibile
+    newWindow.document.close();
+}
+
+
