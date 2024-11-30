@@ -43,13 +43,10 @@ function suspend() {
 
 /*  finestra    */ 
 
-function uploadTrack() {
-    const uploadContainer = document.getElementById("uploadContainer");
-    uploadContainer.style.display = "block";
-    
+function uploadTrack() {    
     const fileInput = document.getElementById("audioFileInput");
     audioPlayer = document.getElementById("audioPlayer");
-
+    fileInput.click();
     fileInput.addEventListener("change", function (event) {
         file = event.target.files[0];
         if (file) {

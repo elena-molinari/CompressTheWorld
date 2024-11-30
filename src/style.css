@@ -98,25 +98,6 @@ input[type="range"] {
 }
 
 
-
-
-
-
-
-#uploadContainer {
-    text-align: center;
-    margin-top: 20px;
-}
-
-input[type="file"] {
-    margin: 10px 0;
-    padding: 8px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
 audio {
     margin-top: 20px;
     width: 300px;
