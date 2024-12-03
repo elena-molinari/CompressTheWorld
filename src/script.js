@@ -26,14 +26,18 @@ function main() {
 
 
     function play_track() {
-        audioPlayer.play(currentTime1);
-       
-    
+        audioPlayer.play(currentTime1) // Avvia il playback partendo dal tempo corrente
+        waveSurfer.play(currentTime1)   // Fa partire WaveSurfer dalla stessa posizione
     }
+   
+   
+    
 
 
     function suspend() {
         audioPlayer.pause();
+       
+       
         
     }
 
@@ -68,7 +72,7 @@ function uploadTrack() {
             compressor.connect(c.destination);
             
             waveSurfer.load(audioPlayer.src);
-            sync()
+            sync();
             
         } else {
             alert("Nessun file audio selezionato!");
@@ -85,30 +89,22 @@ function initWaveSurfer() {
         height: 200,
     });
 }
+
+
 function sync() {
     // Sincronizza WaveSurfer con il source audio del grafo AudioContext
     
-    /*
-    waveSurfer.on('play', () => {
-        c.resume(); // Assicura che l'AudioContext sia attivo
-        audioPlayer.play(); // Usa audioPlayer come sorgente effettiva di playback
-    });
-
-    waveSurfer.on('pause', () => {
-        audioPlayer.pause(); // Pausa la riproduzione tramite audioPlayer
-    });
-    */
-
     waveSurfer.on('seek', (progress) => {
         audioPlayer.currentTime = progress * audioPlayer.duration; // Allinea il tempo
     });
 
     // Mantieni sincronizzata la forma d'onda con il tempo corrente dell'audio
     audioPlayer.addEventListener('timeupdate', () => {
-         currentTime1 = audioPlayer.currentTime / audioPlayer.duration;
-        waveSurfer.seekTo(currentTime1);
+        currentTime1 = audioPlayer.currentTime / audioPlayer.duration;
+        waveSurfer.seekTo(currentTime1);  // Sincronizza WaveSurfer con il tempo dell'audio
     });
 }
+
 
 
 
