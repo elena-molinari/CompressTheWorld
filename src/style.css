@@ -102,3 +102,11 @@ audio {
     margin-top: 20px;
     width: 300px;
 }
+
+/*#waveform-container {
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    background-color: #f7f7f7;
+    height: 200px;
+    width: 100%;
+}

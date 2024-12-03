@@ -8,6 +8,8 @@ let df_att = 0.003;
 let df_rel = 0.25; 
 let audioPlayer;
 let source;
+let waveSurfer;
+let currentTime1
 
 createCompressor();  //devo creare un unico compressore! una sola volta.
 //Quando chiami createCompressor(), crei un nuovo oggetto DynamicsCompressorNode tramite c.createDynamicsCompressor(). Questo nodo è un componente che vive all'interno del grafo di elaborazione audio di AudioContext
@@ -19,22 +21,21 @@ createCompressor();  //devo creare un unico compressore! una sola volta.
 
 
 function main() {
-        play_track(audioPlayer);
+        play_track();
     }
 
-function play_track(aP){
-    aP.play()
-                .then(() => {
-                    console.log("Riproduzione avviata automaticamente.");
-                })
-                .catch((error) => {
-                    console.error("Errore durante la riproduzione automatica:", error);
-                });
-}
 
-function suspend() {
-    audioPlayer.pause();
-   }
+    function play_track() {
+        audioPlayer.play(currentTime1);
+       
+    
+    }
+
+
+    function suspend() {
+        audioPlayer.pause();
+        
+    }
 
 
 
@@ -43,33 +44,73 @@ function suspend() {
 
 /*  finestra    */ 
 
-function uploadTrack() {    
+
+
+function uploadTrack() {
     const fileInput = document.getElementById("audioFileInput");
     audioPlayer = document.getElementById("audioPlayer");
     fileInput.click();
-    fileInput.addEventListener("change", function (event) {
-        file = event.target.files[0];
+
+    fileInput.addEventListener("change", (event) => {
+        const file = event.target.files[0];
         if (file) {
-            // Crea un URL temporaneo per il file
             const fileURL = URL.createObjectURL(file);
-            
-            // Configura il player audio per riprodurre il file
             audioPlayer.src = fileURL;
+            initWaveSurfer();
             
-            // Usa il MediaElementAudioSourceNode per collegare l'audio al AudioContext
-             source = c.createMediaElementSource(audioPlayer);
+
+            // Connetti l'audio al compressore e al grafo audio
             
-            // Collega il source al compressore e il compressore alla destinazione (output audio)
-            source.connect(c.destination);
-           
             
-            // Avvia la riproduzione automatica
-            play_track(audioPlayer);
+            
+            source = c.createMediaElementSource(audioPlayer);
+            source.connect(compressor);
+            compressor.connect(c.destination);
+            
+            waveSurfer.load(audioPlayer.src);
+            sync()
+            
         } else {
             alert("Nessun file audio selezionato!");
         }
     });
 }
+
+function initWaveSurfer() {
+    waveSurfer = WaveSurfer.create({
+        container: '#waveform-container',
+        waveColor: 'violet',
+        progressColor: 'purple',
+        backend: 'MediaElement',
+        height: 200,
+    });
+}
+function sync() {
+    // Sincronizza WaveSurfer con il source audio del grafo AudioContext
+    
+    /*
+    waveSurfer.on('play', () => {
+        c.resume(); // Assicura che l'AudioContext sia attivo
+        audioPlayer.play(); // Usa audioPlayer come sorgente effettiva di playback
+    });
+
+    waveSurfer.on('pause', () => {
+        audioPlayer.pause(); // Pausa la riproduzione tramite audioPlayer
+    });
+    */
+
+    waveSurfer.on('seek', (progress) => {
+        audioPlayer.currentTime = progress * audioPlayer.duration; // Allinea il tempo
+    });
+
+    // Mantieni sincronizzata la forma d'onda con il tempo corrente dell'audio
+    audioPlayer.addEventListener('timeupdate', () => {
+         currentTime1 = audioPlayer.currentTime / audioPlayer.duration;
+        waveSurfer.seekTo(currentTime1);
+    });
+}
+
+
 
 function selectTrack() {
     // Apri una nuova finestra
@@ -194,46 +235,4 @@ function toggle_comp(){
         button.textContent = "Compression Off";  // Se il compressore è disattivo
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
