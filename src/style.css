@@ -103,6 +103,14 @@ audio {
     width: 300px;
 }
 
+canvas {
+    border: 1px solid black;
+    width: 100%;
+    max-width: 800px;
+    height: 150px;
+    margin-top: 20px;
+}
+
 /*#waveform-container {
     margin-top: 20px;
     border: 1px solid #ccc;

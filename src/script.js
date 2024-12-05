@@ -9,40 +9,22 @@ let df_rel = 0.25;
 let audioPlayer;
 let source;
 let waveSurfer;
-let currentTime1
 
 createCompressor();  //devo creare un unico compressore! una sola volta.
 
-function main() {
-        play_track();
-    }
+function play() {
+    play_track();
+}
 
+function play_track() {
+    waveSurfer.play();
+}
 
-    function play_track() {
-        audioPlayer.play(currentTime1) // Avvia il playback partendo dal tempo corrente
-        waveSurfer.play(currentTime1)   // Fa partire WaveSurfer dalla stessa posizione
-    }
-   
-   
-    
+function suspend() {
+    waveSurfer.pause()
+}
 
-
-    function suspend() {
-        audioPlayer.pause();
-       
-       
-        
-    }
-
-
-
-
-
-
-/*  finestra    */ 
-
-
-
+// Carica una nuova traccia
 function uploadTrack() {
     const fileInput = document.getElementById("audioFileInput");
     audioPlayer = document.getElementById("audioPlayer");
@@ -53,52 +35,40 @@ function uploadTrack() {
         if (file) {
             const fileURL = URL.createObjectURL(file);
             audioPlayer.src = fileURL;
-            initWaveSurfer();
-            
 
-            // Connetti l'audio al compressore e al grafo audio
-            
-            
-            
-            source = c.createMediaElementSource(audioPlayer);
-            source.connect(compressor);
-            compressor.connect(c.destination);
-            
-            waveSurfer.load(audioPlayer.src);
-            sync();
-            
+            initWaveSurfer(fileURL);
         } else {
             alert("Nessun file audio selezionato!");
         }
     });
 }
 
-function initWaveSurfer() {
+// Inizializza WaveSurfer con il file audio
+function initWaveSurfer(fileURL) {
+    if (waveSurfer) {
+        waveSurfer.destroy(); // Distruggi l'istanza precedente, se esiste
+    }
+
+    fileURL.controls = true //in modo da poter controllare la traccia dalla waverform
+
     waveSurfer = WaveSurfer.create({
         container: '#waveform-container',
         waveColor: 'violet',
         progressColor: 'purple',
-        backend: 'MediaElement',
         height: 200,
+        url: fileURL,
+        dragToSeek: true,
+        media: audioPlayer,
     });
+
+    source = c.createMediaElementSource(audioPlayer);
+    source.connect(compressor);
+    compressor.connect(c.destination);
+
+    waveSurfer.on('click', (progress) => {
+        waveSurfer.play()
+      })
 }
-
-
-function sync() {
-    // Sincronizza WaveSurfer con il source audio del grafo AudioContext
-    
-    waveSurfer.on('seek', (progress) => {
-        audioPlayer.currentTime = progress * audioPlayer.duration; // Allinea il tempo
-    });
-
-    // Mantieni sincronizzata la forma d'onda con il tempo corrente dell'audio
-    audioPlayer.addEventListener('timeupdate', () => {
-        currentTime1 = audioPlayer.currentTime / audioPlayer.duration;
-        waveSurfer.seekTo(currentTime1);  // Sincronizza WaveSurfer con il tempo dell'audio
-    });
-}
-
-
 
 
 function selectTrack() {
@@ -170,28 +140,27 @@ window.onclick = function(event) {
 
 function compOnOff(state_comp) {
     if (state_comp) {
-        source.disconnect(); //sconnetto l'oscillatore dall'output
-        source.connect(compressor); //connetto l'oscillatore al compressore
-        compressor.connect(c.destination); //connetto il compressore all'output
-       
-    }
-    else
-    {
-        compressor.disconnect() //scollego il compressore
-        source.connect(c.destination); //collego l'oscillatore
+        source.disconnect(); // Sconnetto l'oscillatore dall'output
+        source.connect(compressor); // Connetto l'oscillatore al compressore
+        compressor.connect(c.destination); // Connetto il compressore all'output
+    } else {
+        compressor.disconnect(); // Scollego il compressore
+        source.connect(c.destination); // Collego l'oscillatore
     }
 }
 
 function createCompressor() {
-    compressor = c.createDynamicsCompressor();
-    compressor.threshold.setValueAtTime(df_th, c.currentTime );  // Imposta la soglia
-    compressor.knee.setValueAtTime(df_knee, c.currentTime );       // Imposta il knee
-    compressor.ratio.setValueAtTime(df_ratio, c.currentTime);      // Imposta il rapporto di compressione
-    compressor.attack.setValueAtTime(df_att, c.currentTime);  // Imposta l'attacco
-    compressor.release.setValueAtTime(df_rel, c.currentTime); // Imposta il rilascio
-}
+    if(!compressor){
+        compressor = c.createDynamicsCompressor();
+        compressor.threshold.setValueAtTime(df_th, c.currentTime);  
+        compressor.knee.setValueAtTime(df_knee, c.currentTime);       
+        compressor.ratio.setValueAtTime(df_ratio, c.currentTime);     
+        compressor.attack.setValueAtTime(df_att, c.currentTime);  
+        compressor.release.setValueAtTime(df_rel, c.currentTime);
+    }
+ }
 
-function updateThreshold(df_th){
+function updateThreshold(df_th) {
     compressor.threshold.setValueAtTime(df_th, c.currentTime);
 }
 
@@ -203,25 +172,19 @@ function updateKnee(df_knee) {
     compressor.knee.setValueAtTime(df_knee, c.currentTime);
 }
 
-function updateAtt(df_att){
+function updateAtt(df_att) {
     compressor.attack.setValueAtTime(df_att, c.currentTime);
 }
 
-function updateRel(df_rel){
+function updateRel(df_rel) {
     compressor.release.setValueAtTime(df_rel, c.currentTime);
 }
 
-function toggle_comp(){
-    //Queste mi cambiano la funzionalità
+function toggle_comp() {
     state_comp = !state_comp;
     compOnOff(state_comp);
-
-    //cambiamo il layout
-    const button = document.getElementById("toggle_comp");  //la costante 'button' è il botton di id=toggle_comp
-    if (state_comp) {
-        button.textContent = "Compression On";  // Se il compressore è attivo
-    } else {
-        button.textContent = "Compression Off";  // Se il compressore è disattivo
-    }
+    const button = document.getElementById("toggle_comp");
+    button.textContent = state_comp ? "Compression On" : "Compression Off";
 }
+
 
