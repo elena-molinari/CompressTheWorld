@@ -12,13 +12,6 @@ let waveSurfer;
 let currentTime1
 
 createCompressor();  //devo creare un unico compressore! una sola volta.
-//Quando chiami createCompressor(), crei un nuovo oggetto DynamicsCompressorNode tramite c.createDynamicsCompressor(). Questo nodo è un componente che vive all'interno del grafo di elaborazione audio di AudioContext
-// se metto questa riga all'interno del main ogni volta che richiamo la funzione creo un nuovo nodo completamente separato dal precedente.
-// Quindi commetto due errore:
-// 1)Stai solo creando un nuovo compressore, ma non ricolleghi l'oscillatore al nuovo compressore.
-//  2)Se il compressore precedente è ancora connesso, potresti accumulare nodi inutilizzati nel grafo audio, causando un comportamento inatteso e un consumo di risorse non necessario.
-//In breve: il compressore è un oggetto che deve essere creato una volta e riutilizzato, evitando duplicazioni.
-
 
 function main() {
         play_track();
