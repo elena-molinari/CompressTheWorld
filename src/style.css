@@ -8,23 +8,44 @@ body {
 }
 
 /* Prima metà della pagina */
-.top-half {
-    flex: 1;
-    
+#top-half {
+    display: grid;
     align-items: center;
-    justify-content: center;
-    background-color: #f0f0f0;
+    background-color:rgb(6, 6, 73);
     border-bottom: 5px solid black; /* Linea nera di separazione */
+    padding: 10px;
 }
+
+.select-btn {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #555;
+    background-color: transparent;
+    cursor: pointer;
+    display: inline-block;
+    margin-left: 10px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.select-btn.selected {
+    background-color: #ee2b2b; /* Colore del pallino selezionato */
+    border-color: #555;
+}
+
 
 /* Seconda metà della pagina */
 .bottom-half {
     flex: 0.8;
     align-items: center;
     justify-content: center;
-    background-color: #ffffff;
     margin-left: 15px ;
-margin-right: 15px ;
+    margin-right: 15px ;
+}
+
+.button {
+    margin-right: 5px;
+    margin-left: 5px;
 }
 
 /* Stile per il contenitore dei parametri */
@@ -55,9 +76,11 @@ input[type="range"] {
 /*TENDINA*/
 /* Stile generale per il contenitore della tendina */
 .dropdown {
-    position: relative;
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
 }
+
 
 /* Stile per il pulsante della tendina */
 .dropdown-btn {
@@ -68,8 +91,7 @@ input[type="range"] {
     border-radius: 5px;
     padding: 10px 15px;
     cursor: pointer;
-    margin-left: 35%;
-    margin-top: 15%;
+    margin-right: 5px;
 }
 
 /* Contenuto della tendina, inizialmente nascosto */
@@ -97,24 +119,14 @@ input[type="range"] {
     background-color: #e0e0e0;
 }
 
-
-audio {
-    margin-top: 20px;
-    width: 300px;
-}
-
-canvas {
-    border: 1px solid black;
-    width: 100%;
-    max-width: 800px;
-    height: 150px;
-    margin-top: 20px;
-}
-
-/*#waveform-container {
-    margin-top: 20px;
-    border: 1px solid #ccc;
-    background-color: #f7f7f7;
-    height: 200px;
-    width: 100%;
+.waveform-container {
+    border: 2.5px solid #ee8337;
+    background-color: #ee8337;
+    height: 80px;
+    width: 80%;
+    position: relative;
+    flex-grow: 1;
+    align-items: center;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }

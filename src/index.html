@@ -4,34 +4,83 @@
     </script>
     <link rel="stylesheet" href="style.css"> 
     <script src="https://unpkg.com/wavesurfer.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
 </head>
 <body> 
-    <div class="top-half">
+    <div id="top-half">
+        <!-- Dropdown 1 -->
         <div class="dropdown">
-            <button class="dropdown-btn" onclick="toggleDropdown()">+</button>
-            <div class="dropdown-content" id="dropdownContent">
+            <button class="dropdown-btn" onclick="toggleDropdown('dropdownContent1')">+</button>
+            <div class="dropdown-content" id="dropdownContent1">
                 <p onclick="selectTrack()">Select track</p>
-                <p onclick="uploadTrack()">Upload track</p>
+                <p onclick="uploadTrack('audioFileInput1', 'audioPlayer1', 'wv1')">Upload track</p>
             </div>
-        </div>
-        <div id="waveform-container" style="width: 100%; height: 200px;"></div>
-    
+            <div class="waveform-container" id="wv1"></div> 
+            <button id="selectBtn_wv1" class="select-btn" onclick="toggleTrackSelection('wv1')"></button>
+        </div>   
         <!-- Hidden file input, triggered programmatically -->
-        <input type="file" id="audioFileInput" accept="audio/*" style="display: none;">
-        <audio id="audioPlayer" controls style="display: none;"></audio>
-        <div id="waveform-container" style="width: 100%; height: 200px;"></div>
+        <input type="file" id="audioFileInput1" accept="audio/*" style="display: none;">
+        <audio id="audioPlayer1" controls style="display: none;"></audio>
+        
+        <!-- Dropdown 2 -->
+        <div class="dropdown">
+            <button class="dropdown-btn" onclick="toggleDropdown('dropdownContent2')">+</button>
+            <div class="dropdown-content" id="dropdownContent2">
+                <p onclick="selectTrack()">Select track</p>
+                <p onclick="uploadTrack('audioFileInput2', 'audioPlayer2', 'wv2')">Upload track</p>
+            </div>
+            <div class="waveform-container" id="wv2"></div> 
+            <button id="selectBtn_wv2" class="select-btn" onclick="toggleTrackSelection('wv2')"></button>
+        </div>
+        <!-- Hidden file input, triggered programmatically -->
+        <input type="file" id="audioFileInput2" accept="audio/*" style="display: none;">
+        <audio id="audioPlayer2" controls style="display: none;"></audio>  
 
+        <!-- Dropdown 3 -->
+        <div class="dropdown">
+            <button class="dropdown-btn" onclick="toggleDropdown('dropdownContent3')">+</button>
+            <div class="dropdown-content" id="dropdownContent3">
+                <p onclick="selectTrack()">Select track</p>
+                <p onclick="uploadTrack('audioFileInput3', 'audioPlayer3', 'wv3')">Upload track</p>
+            </div>
+            <div class="waveform-container" id="wv3"></div>
+            <button id="selectBtn_wv3" class="select-btn" onclick="toggleTrackSelection('wv3')"></button>
+        </div>    
+        <!-- Hidden file input, triggered programmatically -->
+        <input type="file" id="audioFileInput3" accept="audio/*" style="display: none;">
+        <audio id="audioPlayer3" controls style="display: none;"></audio>
+
+        <!-- Dropdown 4 -->
+        <div class="dropdown">
+            <button class="dropdown-btn" onclick="toggleDropdown('dropdownContent4')">+</button>
+            <div class="dropdown-content" id="dropdownContent4">
+                <p onclick="selectTrack()">Select track</p>
+                <p onclick="uploadTrack('audioFileInput4', 'audioPlayer4', 'wv4')">Upload track</p>
+            </div>
+            <div class="waveform-container" id="wv4"></div>
+            <button id="selectBtn_wv4" class="select-btn" onclick="toggleTrackSelection('wv4')"></button>
+        </div>    
+        <!-- Hidden file input, triggered programmatically -->
+        <input type="file" id="audioFileInput4" accept="audio/*" style="display: none;">
+        <audio id="audioPlayer4" controls style="display: none;"></audio>
     </div>
+
+
+    <!--Second part of the page-->
         
     <div class="bottom-half">
 
             <div id="activate_comp">
 
-            <button  onclick="play()">Start!</button>
-            <button  onclick="suspend()">Stop!</button>
+            <button class="button"  onclick="playTracks()">Play</button>
+            <button class="button" onclick="pauseTracks()">Pause</button>
             <button id="toggle_comp" onclick="toggle_comp()">Compression Off</button>
+            </div>
+
+            <div id="vu-meter-container" style="text-align: center; margin: 20px;">
+                <canvas id="vu-meter" width="300" height="50" style="background: black; border-radius: 10px;"></canvas>
             </div>
 
             <div id="param_comp">
@@ -41,6 +90,7 @@
                 <input type="range" min="0" max="40" step="5" oninput="df_knee = updateKnee(this.value)"> Knee </input>
                 <input type="range" min="0.003" max="1" step="0.01" oninput="df_att = updateAtt(this.value)"> Att </input>
                 <input type="range" min="0.25" max="1" step="0.01" oninput="df_rel = updateRel(this.value)"> Rel </input>
+                <button id="makeupGain" onclick="updateMakeUpGain()">Make-Up</button>
             </div>
     </div>
 
