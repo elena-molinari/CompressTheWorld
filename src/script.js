@@ -79,7 +79,7 @@ function uploadTrack(fileInputId, audioPlayerId, containerId) {
 function initWaveSurfer(containerId, fileURL, audioPlayer) {
 
     if (waveSurfers[containerId]) {
-        waveSurfers[containerId].destroy(); // Distruggi l'istanza precedente, se esiste
+        waveSurfers[containerId].empty(); // Svuoti l'istanza precedente, se esiste
     }
 
     fileURL.controls = true //in modo da poter controllare la traccia dalla waverform
@@ -104,10 +104,6 @@ function initWaveSurfer(containerId, fileURL, audioPlayer) {
 
     // Associa l'istanza WaveSurfer al contenitore
     waveSurfers[containerId] = waveSurfer;
-
-    waveSurfer.on('click', (progress) => {
-        waveSurfer.play()
-      })
 }
 
 // Aggiorna il gain MakeUP in base al controllo manuale
