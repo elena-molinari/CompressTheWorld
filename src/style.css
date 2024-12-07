@@ -1,10 +1,17 @@
 /* Stile generale per l'intera pagina */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
     display: flex;
     flex-direction: column;
     height: 100vh;
     font-family: Arial, sans-serif;
+    overflow: hidden; /* Evita il rischio di scrolling */
 }
 
 /* Prima metà della pagina */
@@ -37,23 +44,107 @@ body {
 /* Seconda metà della pagina */
 .bottom-half {
     flex: 0.8;
+    background-image: url('https://static.vecteezy.com/ti/vettori-gratis/p1/17685320-trama-panoramica-di-legno-chiaro-con-nodi-vettore-vettoriale.jpg');
+    background-size: cover; /* Adatta l'immagine all'intero schermo */
+    background-repeat: no-repeat; /* Evita che l'immagine venga ripetuta */
+    background-position: center; /* Centra l'immagine */
     align-items: center;
     justify-content: center;
-    margin-left: 15px ;
-    margin-right: 15px ;
 }
 
-.button {
-    margin-right: 5px;
+/*Bottoni controllo traccia*/
+.play-button {
     margin-left: 5px;
+    width: 60px; /* Dimensioni del cerchio */
+    height: 60px;
+    background-color: #0078D4; /* Colore di sfondo blu */
+    border-radius: 50%; /* Per rendere il div circolare */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Aggiunge un'ombra */
 }
+
+.play-button::before {
+    content: '';
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 10px 0 10px 16px; /* Triangolo (Alto, Destra, Basso, Sinistra) */
+    border-color: transparent transparent transparent #ffffff; /* Triangolo bianco */
+    margin-left: 5px; /* Centrare il triangolo */
+  }
+
+.pause-button {
+    width: 60px; /* Dimensioni del cerchio */
+    height: 60px;
+    margin-left: 10px;
+    background-color: #0078D4; /* Colore di sfondo blu */
+    border-radius: 50%; /* Per rendere il div circolare */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Aggiunge un'ombra */
+    position: relative; /* Per posizionare i rettangoli all'interno */
+}
+
+.pause-button::before,
+.pause-button::after {
+    content: '';
+    width: 6px; /* Larghezza di ogni rettangolo */
+    height: 20px; /* Altezza di ogni rettangolo */
+    background-color: #ffffff; /* Colore bianco per i rettangoli */
+    position: absolute;
+}
+  
+.pause-button::before {
+    left: 20px; /* Posizionamento del rettangolo sinistro */
+}
+  
+.pause-button::after {
+    right: 20px; /* Posizionamento del rettangolo destro */
+}
+
+#toggle_comp {
+    width: 150px; /* Larghezza del bottone */
+    height: 60px; /* Altezza del bottone */
+    margin-left: 10px;
+    background-color: #0078D4; /* Colore di sfondo blu */
+    border-radius: 30px; /* Bordo arrotondato per un ovale */
+    color: #ffffff; /* Testo bianco */
+    font-size: 14px; /* Dimensione del testo */
+    font-family: Arial, sans-serif; /* Font del testo */
+    text-align: center; /* Centrare il testo orizzontalmente */
+    line-height: 60px; /* Centrare il testo verticalmente */
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Aggiunge un'ombra */
+    transition: all 0.2s ease; /* Animazione per hover */
+}
+
 
 /* Stile per il contenitore dei parametri */
 #param_comp {
     display: flex;
-    margin-top: 10%;
+    margin-top: 8%;
     align-items: center;
     gap: 10px; /* Spazio tra i controlli */
+}
+
+#makeupGain {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 14px;
+    background-color: #ffb24d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Hover per il make-up gain */
+#makeupGain:hover {
+    background-color: #e0933d;
 }
 
 #activate_comp {
@@ -87,6 +178,7 @@ input[type="range"] {
     font-size: 20px;
     border: none;
     border-radius: 50px;
+    justify-content: center;
     padding: 15px 15px;
     cursor: pointer;
     margin-right: 5px;
@@ -126,7 +218,7 @@ input[type="range"] {
     position: relative;
     flex-grow: 1;
     align-items: center;
-    margin-top: 5px;
-    margin-bottom: 5px;
+    margin-top: 11px;
+    margin-bottom: 10px;
     z-index: 0;
 }

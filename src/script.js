@@ -3,17 +3,16 @@ let compressor;
 let state_comp = false;
 let audioPlayer;
 let source;
+// Per memorizzare le waveform delle tracce selezionate
 let waveSurfers = {};
 // Per memorizzare le tracce selezionate
 const selectedTracks = new Set(); 
-
 // Parametri di default per il compressore
 let df_th = -50;
 let df_knee = 40;
 let df_ratio = 12;
 let df_att = 0.003;
 let df_rel = 0.25; 
-
 // VU Meter setup
 let analyser; // Node per analizzare i dati audio
 let dataArray; // Array per i livelli audio
@@ -89,7 +88,7 @@ function initWaveSurfer(containerId, fileURL, audioPlayer) {
         container: container,
         waveColor: 'violet',
         progressColor: 'purple',
-        height: 80,
+        height: 75,
         url: fileURL,
         dragToSeek: true,
         media: audioPlayer,
@@ -223,6 +222,8 @@ function createCompressor() {
     }
  }
 
+
+// Funzioni di aggiornamento
 function updateThreshold(df_th) {
     compressor.threshold.setValueAtTime(df_th, c.currentTime);
     resetMakeUpGain();
@@ -254,6 +255,14 @@ function toggle_comp() {
     const button = document.getElementById("toggle_comp");
     button.textContent = state_comp ? "Compression On" : "Compression Off";
 }
+
+
+
+
+
+
+
+
 
 // Inizializza il VU Meter
 function initVuMeter() {
