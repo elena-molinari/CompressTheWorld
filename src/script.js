@@ -13,15 +13,20 @@ let df_knee = 40;
 let df_ratio = 12;
 let df_att = 0.003;
 let df_rel = 0.25; 
-// VU Meter setup
-let analyser; // Node per analizzare i dati audio
-let dataArray; // Array per i livelli audio
-let canvas, canvasContext; // Canvas per il VU meter
-let animationFrameId;
-
+let isFirstClick = true;
+let intervalId;
 
 //Creo un unico compressore! una sola volta.
 createCompressor();  
+
+ analyser = c.createAnalyser();
+ /* Imposta le proprietà dell'analizzatore */
+ analyser.fftSize = 256;  // Imposta la dimensione dell'FFT
+ let bufferLength = analyser.frequencyBinCount;  // Ottieni il numero di bins di frequenza
+ let dataArray = new Uint8Array(bufferLength);  // Array per memorizzare i dati di frequenza
+
+
+
 
 // Funzione per selezionare o deselezionare una traccia
 function toggleTrackSelection(containerId) {
@@ -51,7 +56,7 @@ function pauseTracks() {
             waveSurfers[containerId].pause();
         }
     });
-    stopVuMeter();
+   
 }
 
 // Carica una nuova traccia
@@ -68,6 +73,7 @@ function uploadTrack(fileInputId, audioPlayerId, containerId) {
             audioPlayer.src = fileURL;
 
             initWaveSurfer(containerId, fileURL, audioPlayer);
+            
         } else {
             alert("Nessun file audio selezionato!");
         }
@@ -78,7 +84,9 @@ function uploadTrack(fileInputId, audioPlayerId, containerId) {
 function initWaveSurfer(containerId, fileURL, audioPlayer) {
 
     if (waveSurfers[containerId]) {
-        waveSurfers[containerId].empty(); // Svuoti l'istanza precedente, se esiste
+       //eliminando correttamente l'istanza precedente o sovrascrivi la stessa.
+        waveSurfers[containerId].destroy(); // Distruggi l'istanza precedente
+        delete waveSurfers[containerId]; // Rimuovi l'istanza dalla memoria
     }
 
     fileURL.controls = true //in modo da poter controllare la traccia dalla waverform
@@ -96,10 +104,9 @@ function initWaveSurfer(containerId, fileURL, audioPlayer) {
 
     source = c.createMediaElementSource(audioPlayer);
     out = c.createGain();
+    
     compOnOff(state_comp);
-
-    // Inizializza il VU meter dopo aver configurato la traccia
-    initVuMeter();
+    
 
     // Associa l'istanza WaveSurfer al contenitore
     waveSurfers[containerId] = waveSurfer;
@@ -107,17 +114,21 @@ function initWaveSurfer(containerId, fileURL, audioPlayer) {
 
 // Aggiorna il gain MakeUP in base al controllo manuale
 function updateMakeUpGain() {
-    // Salva il gain originale prima di applicare il Make-Up Gain
-    originalGain = out.gain.value;
+    if (isFirstClick) {
+         // Salva il gain originale prima di applicare il Make-Up Gain
+        originalGain = out.gain.value;
 
-    // Leggi la riduzione attuale del compressore
-    const reduction = compressor.reduction; // In dB, valore negativo
+        // Leggi la riduzione attuale del compressore
+        const reduction = compressor.reduction; // In dB, valore negativo
 
-    // Calcola il Make-Up Gain per compensare la riduzione
-    const makeupGain = -reduction / 10; // Converti da dB a scala lineare
-    //console.log(makeupGain)
-    // Applica il Make-Up Gain al nodo GainNode (out)
-    out.gain.setValueAtTime((originalGain + makeupGain), c.currentTime);
+        // Calcola il Make-Up Gain per compensare la riduzione
+        const makeupGain = -reduction / 10; // Converti da dB a scala lineare
+        //console.log(makeupGain)
+        // Applica il Make-Up Gain al nodo GainNode (out)
+        out.gain.setValueAtTime((originalGain + makeupGain), c.currentTime);
+        
+        isFirstClick = false;
+        }
 }
 
 function resetMakeUpGain() {
@@ -203,11 +214,35 @@ function compOnOff(state_comp) {
         source.disconnect(); // Sconnetto l'oscillatore dall'output
         source.connect(compressor); // Connetto l'oscillatore al compressore
         compressor.connect(out); // Connetto compressore al gain
-        out.connect(c.destination); //Connetto il compressore all'output
+        out.connect(analyser); //Connetto il compressore all'output
+        analyser.connect(c.destination);
+
+        
+        // Attiva il VU meter basato sulla riduzione del compressore
+        if (intervalId) clearInterval(intervalId);
+        intervalId = setInterval(function() {
+            let reduction1 = compressor.reduction;  // Ottieni la riduzione in dB
+
+            // Se il valore di riduzione è positivo (compressore non sta riducendo), lo impostiamo a 0
+            if (reduction1 > 0) reduction1 = 0;
+
+            // Mappa la riduzione (in dB) ad una rotazione (in gradi)
+            // La riduzione in dB va da 0 (senza riduzione) a -80 dB (max riduzione), quindi mappiamo questo a un range di gradi.
+            let rotation = Math.max(-reduction1 * 2, 0);  // Mappa la riduzione in dB (a valore negativo) a gradi
+            rotation = Math.min(rotation, 180);  // Limita la rotazione a 180 gradi (max valore della rotazione del needle)
+
+            let needle = document.getElementById("VUmeter").getElementsByClassName('needle')[0];
+            needle.style.transform = "rotate(" + (rotation + 20) + "deg)"; // Aggiunge un offset per evitare che l'ago si fermi a 0 gradi
+        }, 50);
+
+        
     } else {
+        analyser.disconnect();
         out.disconnect();
         compressor.disconnect(); // Scollego il compressore
         source.connect(c.destination); // Collego l'oscillatore
+        // Disabilita il VU meter (smette di essere aggiornato)
+        clearInterval(intervalId); // Pulisce l'intervallo che aggiorna il VU meter
     }
 }
 
@@ -227,26 +262,31 @@ function createCompressor() {
 function updateThreshold(df_th) {
     compressor.threshold.setValueAtTime(df_th, c.currentTime);
     resetMakeUpGain();
+    isFirstClick = true;
 }
 
 function updateRatio(df_ratio) {
     compressor.ratio.setValueAtTime(df_ratio, c.currentTime);
     resetMakeUpGain();
+    isFirstClick = true;
 }
 
 function updateKnee(df_knee) {
     compressor.knee.setValueAtTime(df_knee, c.currentTime);
     resetMakeUpGain();
+    isFirstClick = true;
 }
 
 function updateAtt(df_att) {
     compressor.attack.setValueAtTime(df_att, c.currentTime);
     resetMakeUpGain();
+    isFirstClick = true;
 }
 
 function updateRel(df_rel) {
     compressor.release.setValueAtTime(df_rel, c.currentTime);
     resetMakeUpGain();
+    isFirstClick = true;
 }
 
 function toggle_comp() {
@@ -256,68 +296,3 @@ function toggle_comp() {
     button.textContent = state_comp ? "Compression On" : "Compression Off";
 }
 
-
-
-
-
-
-
-
-
-// Inizializza il VU Meter
-function initVuMeter() {
-    // Seleziona il canvas
-    canvas = document.getElementById('vu-meter');
-    canvasContext = canvas.getContext('2d');
-
-    // Crea un analyser node
-    analyser = c.createAnalyser();
-    analyser.fftSize = 256; // Numero di campioni da analizzare
-    const bufferLength = analyser.frequencyBinCount; // Numero di bin (metà di fftSize)
-    dataArray = new Uint8Array(bufferLength); // Array per i dati audio
-
-    // Collega l'analyser al compressore
-    if (compressor) {
-        source.connect(analyser);
-        analyser.connect(compressor); // Analizza prima di mandare il segnale al compressore
-    } else {
-        source.connect(analyser);
-        analyser.connect(c.destination); // Collegamento senza compressione
-    }
-
-    // Avvia il rendering del VU meter
-    renderVuMeter();
-}
-
-
-// Disegna il VU meter
-function renderVuMeter() {
-    // Pulizia del canvas
-    canvasContext.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Ottieni i dati audio
-    analyser.getByteTimeDomainData(dataArray);
-
-    // Calcola il livello audio medio
-    let sum = 0;
-    for (let i = 0; i < dataArray.length; i++) {
-        const value = dataArray[i] / 128.0 - 1.0; // Normalizza i dati (da 0-255 a -1.0/1.0)
-        sum += value * value;
-    }
-    const rms = Math.sqrt(sum / dataArray.length); // Root Mean Square per il livello audio
-    const level = Math.min(rms * 100, 1); // Scala il valore (clamp tra 0 e 1)
-
-    // Disegna il livello sul canvas
-    const meterWidth = canvas.width * level; // Larghezza del VU meter
-    canvasContext.fillStyle = `rgb(${Math.floor(255 * level)}, ${Math.floor(255 * (1 - level))}, 0)`; // Colore dinamico (verde a rosso)
-    canvasContext.fillRect(0, 0, meterWidth, canvas.height);
-
-    // Ricalcolo
-    animationFrameId = requestAnimationFrame(renderVuMeter);
-}
-
-// Ferma il VU meter
-function stopVuMeter() {
-    cancelAnimationFrame(animationFrameId);
-    canvasContext.clearRect(0, 0, canvas.width, canvas.height);
-}

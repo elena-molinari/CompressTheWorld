@@ -79,9 +79,27 @@
             <button id="toggle_comp" onclick="toggle_comp()">Compression Off</button>
         </div>
 
-        <div id="vu-meter-container" style="text-align: center; margin: 20px;">
-            <canvas id="vu-meter" width="300" height="50" style="background: rgb(238, 233, 233); border-radius: 10px;"></canvas>
-        </div>
+        <!--VUmeter-->   
+        <div id='meters'>
+            <div id='VUmeter' class='meter'>
+               <span class='indicator minus'>-</span>
+               <span class='indicator plus'>+</span>
+               <div class='needle'></div>
+        
+        
+               <div class='label'>VU</div>
+                <div class='meterLine'>
+                    <span class='base'></span>
+                    <div class='danger'>
+                        <span class='base'></span>
+                    </div>    
+                </div>
+               <div class='shadow'></div>
+               <div class='needleBase'><span></span></div>
+            </div> 
+        </div>    
+
+
 
         <div id="param_comp">
             <input type="range" min="-100" max="0" step="1" oninput="df_th=updateThreshold(this.value)"> Th </input>
