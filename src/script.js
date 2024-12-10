@@ -15,6 +15,7 @@ let df_att = 0.003;
 let df_rel = 0.25; 
 let isFirstClick = true;
 let intervalId;
+let aleseibello=0;
 
 //Creo un unico compressore! una sola volta.
 createCompressor();  
