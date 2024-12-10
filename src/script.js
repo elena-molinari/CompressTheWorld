@@ -65,19 +65,19 @@ function pauseTracks() {
 
 // Carica una nuova traccia
 function uploadTrack(fileInputId, audioPlayerId, containerId) {
-    const fileInput = document.getElementById(fileInputId);
+    let fileInput = document.getElementById(fileInputId);
     audioPlayer = document.getElementById(audioPlayerId);
 
     fileInput.click();
 
     fileInput.addEventListener("change", (event) => {
-        const file = event.target.files[0];
+        let file = event.target.files[0];
         if (file) {
             
             
-            const fileURL = URL.createObjectURL(file);
+            let fileURL = URL.createObjectURL(file);
            
-            //audioPlayer.src = fileURL;
+            audioPlayer.src = fileURL;
 
             initWaveSurfer(containerId, fileURL, audioPlayer);
             
@@ -89,7 +89,7 @@ function uploadTrack(fileInputId, audioPlayerId, containerId) {
 
 // Inizializza WaveSurfer con il file audio
 function initWaveSurfer(containerId, fileURL, audioPlayer) {
-    audioPlayer.src=fileURL;
+   
     if (waveSurfers[containerId]) {
        //eliminando correttamente l'istanza precedente o sovrascrivi la stessa.
         waveSurfers[containerId].destroy(); // Distruggi l'istanza precedente
@@ -98,7 +98,7 @@ function initWaveSurfer(containerId, fileURL, audioPlayer) {
 
     fileURL.controls = true //in modo da poter controllare la traccia dalla waverform
 
-    const container = document.getElementById(containerId);
+    let container = document.getElementById(containerId);
     const waveSurfer = WaveSurfer.create({
         container: container,
         waveColor: 'violet',
