@@ -96,6 +96,7 @@ function initWaveSurfer(containerId, fileURL, audioPlayer) {
         delete waveSurfers[containerId]; // Rimuovi l'istanza dalla memoria
     }
 
+
     fileURL.controls = true //in modo da poter controllare la traccia dalla waverform
 
     let container = document.getElementById(containerId);
