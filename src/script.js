@@ -15,7 +15,7 @@ let df_att = 0.003;
 let df_rel = 0.25; 
 let isFirstClick = true;
 let intervalId;
-let aleseibello=0;
+let  originalGain;
 
 //Creo un unico compressore! una sola volta.
 createCompressor();  
@@ -46,8 +46,11 @@ function playTracks() {
         if (waveSurfers[containerId]) {
             waveSurfers[containerId].play();
         }
-    });
-}
+      });
+    };
+
+
+
 
 
 // Funzione globale per Pause
@@ -70,8 +73,11 @@ function uploadTrack(fileInputId, audioPlayerId, containerId) {
     fileInput.addEventListener("change", (event) => {
         const file = event.target.files[0];
         if (file) {
+            
+            
             const fileURL = URL.createObjectURL(file);
-            audioPlayer.src = fileURL;
+           
+            //audioPlayer.src = fileURL;
 
             initWaveSurfer(containerId, fileURL, audioPlayer);
             
@@ -83,7 +89,7 @@ function uploadTrack(fileInputId, audioPlayerId, containerId) {
 
 // Inizializza WaveSurfer con il file audio
 function initWaveSurfer(containerId, fileURL, audioPlayer) {
-
+    audioPlayer.src=fileURL;
     if (waveSurfers[containerId]) {
        //eliminando correttamente l'istanza precedente o sovrascrivi la stessa.
         waveSurfers[containerId].destroy(); // Distruggi l'istanza precedente
@@ -110,14 +116,15 @@ function initWaveSurfer(containerId, fileURL, audioPlayer) {
     
 
     // Associa l'istanza WaveSurfer al contenitore
-    waveSurfers[containerId] = waveSurfer;
+    waveSurfers[containerId] = waveSurfer
+  
 }
 
 // Aggiorna il gain MakeUP in base al controllo manuale
 function updateMakeUpGain() {
     if (isFirstClick) {
          // Salva il gain originale prima di applicare il Make-Up Gain
-        originalGain = out.gain.value;
+         originalGain = out.gain.value;
 
         // Leggi la riduzione attuale del compressore
         const reduction = compressor.reduction; // In dB, valore negativo
@@ -132,23 +139,22 @@ function updateMakeUpGain() {
         }
 }
 
+
+
+
+
 function resetMakeUpGain() {
     out.gain.setValueAtTime(originalGain, c.currentTime);
     //console.log("Make-Up Gain resettato al volume originale.");
 }
 
 
-function selectTrack(containerId) {
+function selectTrack() {
     // Apri una nuova finestra
     const newWindow = window.open("", "_blank");
 
-    // Lista dei file audio ospitati
-    const tracks = [
-        { name: "Buzz Buzz", url: "https://elena-molinari.github.io/CompressTheWorld/SelectAudio/buzz-buzz-95806.mp3" },
-    ];
-
-    // Genera il contenuto HTML
-    let htmlContent = `
+    // Aggiungi il contenuto base della nuova pagina
+    newWindow.document.write(`
         <!DOCTYPE html>
         <html lang="en">
         <head>
@@ -166,43 +172,28 @@ function selectTrack(containerId) {
                     text-align: center;
                     color: #333;
                 }
-                .track-item {
-                    margin: 15px 0;
+                .placeholder {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 80vh;
+                    color: #999;
                     font-size: 18px;
-                    color: #555;
-                }
-                .track-item:hover {
-                    color: #007BFF;
                 }
             </style>
         </head>
         <body>
             <h1>Select Track</h1>
-            <div id="track-list">
-    `;
-
-    // Aggiungi ogni traccia alla lista (solo titolo)
-    tracks.forEach(track => {
-        htmlContent += `
-            <div class="track-item" onclick>
-                <strong>${track.name}</strong>
-            </div>
-        `;
-    });
-
-    // Chiudi il contenuto HTML
-    htmlContent += `
+            <div class="placeholder">
+                <p>This page is under construction. Add tracks dynamically here.</p>
             </div>
         </body>
         </html>
-    `;
+    `);
 
-    // Scrivi il contenuto nella nuova finestra
-    newWindow.document.write(htmlContent);
+    // Chiudi il documento per renderlo visibile
     newWindow.document.close();
 }
-
-
 
 function toggleDropdown(dropdownId) {
     const dropdown = document.getElementById(dropdownId);
@@ -281,33 +272,46 @@ function createCompressor() {
 
 // Funzioni di aggiornamento
 function updateThreshold(df_th) {
+    if (!isFirstClick) {
+        resetMakeUpGain();
+        isFirstClick = true;
+        }
     compressor.threshold.setValueAtTime(df_th, c.currentTime);
-    resetMakeUpGain();
-    isFirstClick = true;
+   
 }
 
 function updateRatio(df_ratio) {
+    if (!isFirstClick) {
+        resetMakeUpGain();
+        isFirstClick = true;
+        }
     compressor.ratio.setValueAtTime(df_ratio, c.currentTime);
-    resetMakeUpGain();
-    isFirstClick = true;
+   
 }
 
 function updateKnee(df_knee) {
+    if (!isFirstClick) {
+        resetMakeUpGain();
+        isFirstClick = true;
+        }
     compressor.knee.setValueAtTime(df_knee, c.currentTime);
-    resetMakeUpGain();
-    isFirstClick = true;
+ 
 }
 
 function updateAtt(df_att) {
+    if (!isFirstClick) {
+        resetMakeUpGain();
+        isFirstClick = true;
+        }
     compressor.attack.setValueAtTime(df_att, c.currentTime);
-    resetMakeUpGain();
-    isFirstClick = true;
 }
 
 function updateRel(df_rel) {
+    if (!isFirstClick) {
+        resetMakeUpGain();
+        isFirstClick = true;
+        }
     compressor.release.setValueAtTime(df_rel, c.currentTime);
-    resetMakeUpGain();
-    isFirstClick = true;
 }
 
 function toggle_comp() {
