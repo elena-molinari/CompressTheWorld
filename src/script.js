@@ -15,7 +15,7 @@ let df_att = 0.003;
 let df_rel = 0.25; 
 let isFirstClick = true;
 let intervalId;
-let  originalGain;
+let originalGain;
 
 //Creo un unico compressore! una sola volta.
 createCompressor();  
@@ -32,12 +32,19 @@ createCompressor();
 // Funzione per selezionare o deselezionare una traccia
 function toggleTrackSelection(containerId) {
     const button = document.getElementById(`selectBtn_${containerId}`);
+    const toggle = document.getElementById("toggle_comp");//questo è il bottone compressor on/off
     if (selectedTracks.has(containerId)) {
         selectedTracks.delete(containerId);
         button.classList.remove("selected"); // Svuota il pallino
+        //quando la traccia viene deselezionata rimuovi il compressore
+        compOnOff(false, containerId);
+        toggle.textContent = "Compression Off";
+        console.log(`compressore off causa tolta la selezione ${containerId}`);
     } else {
         selectedTracks.add(containerId);
         button.classList.add("selected"); // Riempie il pallino
+        //compOnOff(true);
+        //toggle.textContent = "Compression On";
     }
 }
 
@@ -46,8 +53,8 @@ function playTracks() {
         if (waveSurfers[containerId]) {
             waveSurfers[containerId].play();
         }
-      });
-    };
+    });
+};
 
 
 
@@ -89,13 +96,17 @@ function uploadTrack(fileInputId, audioPlayerId, containerId) {
 
 // Inizializza WaveSurfer con il file audio
 function initWaveSurfer(containerId, fileURL, audioPlayer) {
-   
+    //attiva stile selected al pulsante
+    const button = document.getElementById(`selectBtn_${containerId}`);
+    selectedTracks.add(containerId);
+    button.classList.add("selected");
+
     if (waveSurfers[containerId]) {
        //eliminando correttamente l'istanza precedente o sovrascrivi la stessa.
         waveSurfers[containerId].destroy(); // Distruggi l'istanza precedente
         delete waveSurfers[containerId]; // Rimuovi l'istanza dalla memoria
     }
-
+    
 
     fileURL.controls = true //in modo da poter controllare la traccia dalla waverform
 
@@ -222,8 +233,9 @@ window.onclick = function (event) {
 
 /*  compressore   */
 
-function compOnOff(state_comp) {
-    if (state_comp) {
+function compOnOff(state, containerId) {
+    if (state) {
+        console.log(`Compressore attivato per la traccia ${containerId}`);
         source.disconnect(); // Sconnetto l'oscillatore dall'output
         source.connect(compressor); // Connetto l'oscillatore al compressore
         compressor.connect(out); // Connetto compressore al gain
@@ -250,6 +262,7 @@ function compOnOff(state_comp) {
 
         
     } else {
+        console.log(`Compressore disattivato per la traccia ${containerId}`);
         analyser.disconnect();
         out.disconnect();
         compressor.disconnect(); // Scollego il compressore
@@ -317,8 +330,13 @@ function updateRel(df_rel) {
 
 function toggle_comp() {
     state_comp = !state_comp;
-    compOnOff(state_comp);
+    //compOnOff(state_comp);
     const button = document.getElementById("toggle_comp");
     button.textContent = state_comp ? "Compression On" : "Compression Off";
+    // Applica lo stato del compressore a tutte le tracce selezionate
+    selectedTracks.forEach((containerId) => {
+        compOnOff(state_comp, containerId);
+        console.log(`${state_comp ? "Attivato" : "Disattivato"} compressore per la traccia ${containerId}`);
+    });
 }
 
