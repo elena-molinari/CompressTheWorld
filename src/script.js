@@ -137,12 +137,17 @@ function resetMakeUpGain() {
 }
 
 
-function selectTrack() {
+function selectTrack(containerId) {
     // Apri una nuova finestra
     const newWindow = window.open("", "_blank");
 
-    // Aggiungi il contenuto base della nuova pagina
-    newWindow.document.write(`
+    // Lista dei file audio ospitati
+    const tracks = [
+        { name: "Buzz Buzz", url: "https://elena-molinari.github.io/CompressTheWorld/SelectAudio/buzz-buzz-95806.mp3" },
+    ];
+
+    // Genera il contenuto HTML
+    let htmlContent = `
         <!DOCTYPE html>
         <html lang="en">
         <head>
@@ -160,28 +165,43 @@ function selectTrack() {
                     text-align: center;
                     color: #333;
                 }
-                .placeholder {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    height: 80vh;
-                    color: #999;
+                .track-item {
+                    margin: 15px 0;
                     font-size: 18px;
+                    color: #555;
+                }
+                .track-item:hover {
+                    color: #007BFF;
                 }
             </style>
         </head>
         <body>
             <h1>Select Track</h1>
-            <div class="placeholder">
-                <p>This page is under construction. Add tracks dynamically here.</p>
+            <div id="track-list">
+    `;
+
+    // Aggiungi ogni traccia alla lista (solo titolo)
+    tracks.forEach(track => {
+        htmlContent += `
+            <div class="track-item" onclick>
+                <strong>${track.name}</strong>
+            </div>
+        `;
+    });
+
+    // Chiudi il contenuto HTML
+    htmlContent += `
             </div>
         </body>
         </html>
-    `);
+    `;
 
-    // Chiudi il documento per renderlo visibile
+    // Scrivi il contenuto nella nuova finestra
+    newWindow.document.write(htmlContent);
     newWindow.document.close();
 }
+
+
 
 function toggleDropdown(dropdownId) {
     const dropdown = document.getElementById(dropdownId);
