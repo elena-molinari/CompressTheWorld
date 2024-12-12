@@ -1,10 +1,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <link rel="icon" href="data:;base64,=" />
     <!-- Aggiungi wavesurfer -->
     <script src="https://unpkg.com/wavesurfer.js"></script>
-    <!-- Aggiungi jQuery -->
-    
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-Knob/1.2.13/jquery.knob.min.js" integrity="sha256-2144q+NOM/XU6ZxSqRTJ8P0W/CkY6zXc6mXYt4+mF9s=" crossorigin="anonymous"></script>
+
     <!--File CSS-->
     <link rel="stylesheet" href="style.css">
     <!--File JS-->
@@ -73,10 +76,43 @@
 
     <!--Second part of the page-->        
     <div class="bottom-half">
-        <div id="activate_comp">
-            <button class="play-button"  onclick="playTracks()"></button>
-            <button class="pause-button" onclick="pauseTracks()"></button>
-            <button id="toggle_comp" onclick="toggle_comp()">Compression Off</button>
+
+        <!-- Input Knobs -->
+        <div id="param_comp">
+            <div class="knob-rowt">
+                <div class="knob-container">
+                    <input id="th_knob" value="-50">
+                        <div class="knob-label">Threshold</div>
+                        <div class="knob-value" id="th_value"></div>
+                    </input>
+                </div>
+                <div class="knob-container">
+                    <input id="ratio_knob" value="12">
+                        <div class="knob-label">Ratio</div>
+                        <div class="knob-value" id="ratio_value"></div>
+                    </input>
+                </div>
+                <div class="knob-container">
+                    <input id="knee_knob" value="40">
+                        <div class="knob-label">Knee</div>
+                        <div class="knob-value" id="knee_value"></div>
+                    </input>
+                </div>
+            </div>
+            <div class="knob-rowb">
+                <div class="knob-container">
+                    <input id="att_knob" value="0.003">
+                        <div class="knob-label">Attack</div>
+                        <div class="knob-value" id="att_value"></div>
+                    </input>
+                </div>
+                <div class="knob-container">
+                    <input id="rel_knob" value="0.25">
+                        <div class="knob-label">Release</div>
+                        <div class="knob-value" id="rel_value"></div>
+                    </input>
+                </div>
+            </div>
         </div>
 
         <!--VUmeter-->   
@@ -85,8 +121,6 @@
                <span class='indicator minus'>-</span>
                <span class='indicator plus'>+</span>
                <div class='needle'></div>
-        
-        
                <div class='label'>VU</div>
                 <div class='meterLine'>
                     <span class='base'></span>
@@ -97,17 +131,18 @@
                <div class='shadow'></div>
                <div class='needleBase'><span></span></div>
             </div> 
-        </div>    
+        </div>
 
-
-
-        <div id="param_comp">
-            <input type="range" min="-100" max="0" step="1" oninput="df_th=updateThreshold(this.value)"> Th </input>
-            <input type="range" min="1" max="20" step="1" oninput="df_ratio=updateRatio(this.value)"> Ratio </input>
-            <input type="range" min="0" max="40" step="5" oninput="df_knee = updateKnee(this.value)"> Knee </input>
-            <input type="range" min="0.003" max="1" step="0.01" oninput="df_att = updateAtt(this.value)"> Att </input>
-            <input type="range" min="0.25" max="1" step="0.01" oninput="df_rel = updateRel(this.value)"> Rel </input>
-            <button id="makeupGain" onclick="updateMakeUpGain()">Make-Up</button>
+        <!--Tasti gestione traccia e ompressione--> 
+        <div id="activate_comp">
+            <div class="button-rowt">
+                <button class="play-button"  onclick="playTracks()"></button>
+                <button class="pause-button" onclick="pauseTracks()"></button>
+            </div>
+            <div class="button-rowb">
+                <button id="toggle_comp" onclick="toggle_comp()">Compression Off</button>
+                <button id="makeupGain" onclick="updateMakeUpGain()">Make-Up</button>
+            </div>
         </div>
     </div>
 </body>

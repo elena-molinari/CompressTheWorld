@@ -1,33 +1,31 @@
 const c = new AudioContext();
 let compressor;
 let state_comp = false;
-let audioPlayer;
 let source;
+let audioSources = {}
 // Per memorizzare le waveform delle tracce selezionate
 let waveSurfers = {};
 // Per memorizzare le tracce selezionate
-const selectedTracks = new Set(); 
+let selectedTracks = new Set(); 
 // Parametri di default per il compressore
 let df_th = -50;
 let df_knee = 40;
 let df_ratio = 12;
 let df_att = 0.003;
 let df_rel = 0.25; 
+let currentValue;
 let isFirstClick = true;
 let intervalId;
-let aleseibello=0;
+let originalGain;
 
 //Creo un unico compressore! una sola volta.
 createCompressor();  
 
- analyser = c.createAnalyser();
- /* Imposta le proprietà dell'analizzatore */
- analyser.fftSize = 256;  // Imposta la dimensione dell'FFT
- let bufferLength = analyser.frequencyBinCount;  // Ottieni il numero di bins di frequenza
- let dataArray = new Uint8Array(bufferLength);  // Array per memorizzare i dati di frequenza
-
-
-
+analyser = c.createAnalyser();
+/* Imposta le proprietà dell'analizzatore */
+analyser.fftSize = 256;  // Imposta la dimensione dell'FFT
+let bufferLength = analyser.frequencyBinCount;  // Ottieni il numero di bins di frequenza
+let dataArray = new Uint8Array(bufferLength);  // Array per memorizzare i dati di frequenza
 
 // Funzione per selezionare o deselezionare una traccia
 function toggleTrackSelection(containerId) {
@@ -35,6 +33,7 @@ function toggleTrackSelection(containerId) {
     if (selectedTracks.has(containerId)) {
         selectedTracks.delete(containerId);
         button.classList.remove("selected"); // Svuota il pallino
+        waveSurfers[containerId].pause();
     } else {
         selectedTracks.add(containerId);
         button.classList.add("selected"); // Riempie il pallino
@@ -62,56 +61,87 @@ function pauseTracks() {
 
 // Carica una nuova traccia
 function uploadTrack(fileInputId, audioPlayerId, containerId) {
-    const fileInput = document.getElementById(fileInputId);
-    audioPlayer = document.getElementById(audioPlayerId);
+    let fileInput = document.getElementById(fileInputId);
+    let audioPlayer = document.getElementById(audioPlayerId);
 
     fileInput.click();
 
     fileInput.addEventListener("change", (event) => {
-        const file = event.target.files[0];
+        let file = event.target.files[0];
         if (file) {
-            const fileURL = URL.createObjectURL(file);
+            
+            
+            let fileURL = URL.createObjectURL(file);
+           
+
+            //resettare audioPlayer
+            if (audioPlayer.src){
+                audioPlayer.pause();
+                audioPlayer.src="";
+                audioPlayer.load();
+                audioPlayer.currentTime = 0;
+                console.log("entra")
+            }
+
+            if (audioPlayer.src){
             audioPlayer.src = fileURL;
+            audioPlayer.load();
+            }
 
             initWaveSurfer(containerId, fileURL, audioPlayer);
             
         } else {
             alert("Nessun file audio selezionato!");
         }
-    });
+    }, {once : true});
+    
 }
 
 // Inizializza WaveSurfer con il file audio
 function initWaveSurfer(containerId, fileURL, audioPlayer) {
 
+    //appena uploado la traccia il pallino viene attivato subito
+    const button = document.getElementById(`selectBtn_${containerId}`);
+   selectedTracks.add(containerId);
+   button.classList.add("selected");
+
+
     if (waveSurfers[containerId]) {
+        console.log("distrugge forma d'onda prec")
        //eliminando correttamente l'istanza precedente o sovrascrivi la stessa.
         waveSurfers[containerId].destroy(); // Distruggi l'istanza precedente
         delete waveSurfers[containerId]; // Rimuovi l'istanza dalla memoria
     }
 
+
     fileURL.controls = true //in modo da poter controllare la traccia dalla waverform
 
-    const container = document.getElementById(containerId);
+    let container = document.getElementById(containerId);
     const waveSurfer = WaveSurfer.create({
         container: container,
         waveColor: 'violet',
         progressColor: 'purple',
-        height: 75,
+        height: 95,
         url: fileURL,
         dragToSeek: true,
         media: audioPlayer,
     });
 
-    source = c.createMediaElementSource(audioPlayer);
+
+    if (audioSources[containerId]) {
+        audioSources[containerId].disconnect();
+    }
+    audioSources[containerId] = c.createMediaElementSource(audioPlayer);
     out = c.createGain();
     
-    compOnOff(state_comp);
+    compOnOff(state_comp,  containerId);
     
 
     // Associa l'istanza WaveSurfer al contenitore
-    waveSurfers[containerId] = waveSurfer;
+    waveSurfers[containerId] = waveSurfer
+  
 }
+
 
 // Aggiorna il gain MakeUP in base al controllo manuale
 function updateMakeUpGain() {
@@ -129,7 +159,7 @@ function updateMakeUpGain() {
         out.gain.setValueAtTime((originalGain + makeupGain), c.currentTime);
         
         isFirstClick = false;
-        }
+    }
 }
 
 function resetMakeUpGain() {
@@ -208,12 +238,13 @@ window.onclick = function (event) {
 };
 
 
-/*  compressore   */
-
-function compOnOff(state_comp) {
-    if (state_comp) {
-        source.disconnect(); // Sconnetto l'oscillatore dall'output
-        source.connect(compressor); // Connetto l'oscillatore al compressore
+function compOnOff(state, containerId) {
+    if (state) {
+        audioSources[containerId].disconnect(); // Sconnetto l'oscillatore dall'outputù
+        analyser.disconnect();
+        out.disconnect();
+        compressor.disconnect();
+        audioSources[containerId].connect(compressor); // Connetto l'oscillatore al compressore
         compressor.connect(out); // Connetto compressore al gain
         out.connect(analyser); //Connetto il compressore all'output
         analyser.connect(c.destination);
@@ -238,10 +269,11 @@ function compOnOff(state_comp) {
 
         
     } else {
+        audioSources[containerId].disconnect();
         analyser.disconnect();
         out.disconnect();
         compressor.disconnect(); // Scollego il compressore
-        source.connect(c.destination); // Collego l'oscillatore
+        audioSources[containerId].connect(c.destination); // Collego l'oscillatore
         // Disabilita il VU meter (smette di essere aggiornato)
         clearInterval(intervalId); // Pulisce l'intervallo che aggiorna il VU meter
     }
@@ -256,44 +288,149 @@ function createCompressor() {
         compressor.attack.setValueAtTime(df_att, c.currentTime);  
         compressor.release.setValueAtTime(df_rel, c.currentTime);
     }
- }
+}
+
+/* KNOBS*/
+// Knob per Threshold
+$('#th_knob').knob({
+    min: -100,
+    max: 0,
+    step: 1,
+    fgColor:"#483D8B",
+    bgColor:"#C0C0C0",
+    cursor: 8,
+    angleOffset:-125,
+    angleArc:250,
+    width: '100%',
+    height: '100%',
+    rotation: 'clockwise',
+    release: function (v) {
+        updateThreshold(v);
+    }
+})
+
+// Knob per Ratio
+$('#ratio_knob').knob({
+    min: 1,
+    max: 20,
+    step: 1,
+    fgColor:"#483D8B",
+    bgColor:"#C0C0C0",
+    cursor: 8,
+    angleOffset:-125,
+    angleArc:250,
+    width: '100%',
+    height: '100%',
+    rotation: 'clockwise',
+    release: function (v) {
+        updateRatio(v);
+    }
+});
+
+// Knob per Knee
+$('#knee_knob').knob({
+    min: 0,
+    max: 40,
+    step: 5,
+    fgColor:"#483D8B",
+    bgColor:"#C0C0C0",
+    cursor: 8,
+    angleOffset:-125,
+    angleArc:250,
+    width: '100%',
+    height: '100%',
+    rotation: 'clockwise',
+    release: function (v) {
+        updateKnee(v);
+    }
+});
+
+// Knob per Attack
+$('#att_knob').knob({
+    min: 0.003,
+    max: 1,
+    step: 0.01,
+    fgColor:"#483D8B",
+    bgColor:"#C0C0C0",
+    cursor: 8,
+    angleOffset:-125,
+    angleArc:250,
+    width: '100%',
+    height: '100%',
+    rotation: 'clockwise',
+    release: function (v) {
+        updateAtt(v);
+    }
+});
+
+// Knob per Release
+$('#rel_knob').knob({
+    min: 0.25,
+    max: 1,
+    step: 0.01,
+    fgColor:"#483D8B",
+    bgColor:"#C0C0C0",
+    cursor: 8,
+    angleOffset:-125,
+    angleArc:250,
+    width: '100%',
+    height: '100%',
+    rotation: 'clockwise',
+    release: function (v) {
+        updateRel(v);
+    }
+});
 
 
 // Funzioni di aggiornamento
 function updateThreshold(df_th) {
+    if (!isFirstClick) {
+        resetMakeUpGain();
+        isFirstClick = true;
+        }
     compressor.threshold.setValueAtTime(df_th, c.currentTime);
-    resetMakeUpGain();
-    isFirstClick = true;
+   
 }
 
 function updateRatio(df_ratio) {
+    if (!isFirstClick) {
+        resetMakeUpGain();
+        isFirstClick = true;
+        }
     compressor.ratio.setValueAtTime(df_ratio, c.currentTime);
-    resetMakeUpGain();
-    isFirstClick = true;
+   
 }
 
 function updateKnee(df_knee) {
+    if (!isFirstClick) {
+        resetMakeUpGain();
+        isFirstClick = true;
+        }
     compressor.knee.setValueAtTime(df_knee, c.currentTime);
-    resetMakeUpGain();
-    isFirstClick = true;
+ 
 }
 
 function updateAtt(df_att) {
+    if (!isFirstClick) {
+        resetMakeUpGain();
+        isFirstClick = true;
+        }
     compressor.attack.setValueAtTime(df_att, c.currentTime);
-    resetMakeUpGain();
-    isFirstClick = true;
 }
 
 function updateRel(df_rel) {
+    if (!isFirstClick) {
+        resetMakeUpGain();
+        isFirstClick = true;
+        }
     compressor.release.setValueAtTime(df_rel, c.currentTime);
-    resetMakeUpGain();
-    isFirstClick = true;
 }
 
 function toggle_comp() {
     state_comp = !state_comp;
-    compOnOff(state_comp);
     const button = document.getElementById("toggle_comp");
     button.textContent = state_comp ? "Compression On" : "Compression Off";
+    selectedTracks.forEach((containerId) => {
+    compOnOff(state_comp, containerId); });
+    
 }
-
