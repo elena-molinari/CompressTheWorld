@@ -1,12 +1,13 @@
 const c = new AudioContext();
 let compressor;
 let state_comp = false;
-let audioPlayer;
+let out;
 let source;
+let audioSources = {};
 // Per memorizzare le waveform delle tracce selezionate
 let waveSurfers = {};
 // Per memorizzare le tracce selezionate
-const selectedTracks = new Set(); 
+let selectedTracks = new Set(); 
 // Parametri di default per il compressore
 let df_th = -50;
 let df_knee = 40;
@@ -35,6 +36,7 @@ function toggleTrackSelection(containerId) {
     if (selectedTracks.has(containerId)) {
         selectedTracks.delete(containerId);
         button.classList.remove("selected"); // Svuota il pallino
+        waveSurfers[containerId].pause();
     } else {
         selectedTracks.add(containerId);
         button.classList.add("selected"); // Riempie il pallino
@@ -66,7 +68,7 @@ function pauseTracks() {
 // Carica una nuova traccia
 function uploadTrack(fileInputId, audioPlayerId, containerId) {
     let fileInput = document.getElementById(fileInputId);
-    audioPlayer = document.getElementById(audioPlayerId);
+    let audioPlayer = document.getElementById(audioPlayerId);
 
     fileInput.click();
 
@@ -77,20 +79,41 @@ function uploadTrack(fileInputId, audioPlayerId, containerId) {
             
             let fileURL = URL.createObjectURL(file);
            
+
+            //resettare audioPlayer
+            if (audioPlayer.src){
+                audioPlayer.pause();
+                audioPlayer.src="";
+                audioPlayer.load();
+                audioPlayer.currentTime = 0;
+                console.log("entra")
+            }
+
+            if (audioPlayer.src){
             audioPlayer.src = fileURL;
+            audioPlayer.load();
+            }
 
             initWaveSurfer(containerId, fileURL, audioPlayer);
             
         } else {
             alert("Nessun file audio selezionato!");
         }
-    });
+    }, {once : true});
+    
 }
 
 // Inizializza WaveSurfer con il file audio
 function initWaveSurfer(containerId, fileURL, audioPlayer) {
-   
+
+    //appena uploado la traccia il pallino viene attivato subito
+    const button = document.getElementById(`selectBtn_${containerId}`);
+   selectedTracks.add(containerId);
+   button.classList.add("selected");
+
+
     if (waveSurfers[containerId]) {
+        console.log("distrugge forma d'onda prec")
        //eliminando correttamente l'istanza precedente o sovrascrivi la stessa.
         waveSurfers[containerId].destroy(); // Distruggi l'istanza precedente
         delete waveSurfers[containerId]; // Rimuovi l'istanza dalla memoria
@@ -110,10 +133,14 @@ function initWaveSurfer(containerId, fileURL, audioPlayer) {
         media: audioPlayer,
     });
 
-    source = c.createMediaElementSource(audioPlayer);
+
+    if (audioSources[containerId]) {
+        audioSources[containerId].disconnect();
+    }
+    audioSources[containerId] = c.createMediaElementSource(audioPlayer);
     out = c.createGain();
     
-    compOnOff(state_comp);
+    compOnOff(state_comp,  containerId);
     
 
     // Associa l'istanza WaveSurfer al contenitore
@@ -222,10 +249,16 @@ window.onclick = function (event) {
 
 /*  compressore   */
 
-function compOnOff(state_comp) {
-    if (state_comp) {
-        source.disconnect(); // Sconnetto l'oscillatore dall'output
-        source.connect(compressor); // Connetto l'oscillatore al compressore
+
+ 
+
+function compOnOff(state, containerId) {
+    if (state) {
+        audioSources[containerId].disconnect(); // Sconnetto l'oscillatore dall'outputù
+        analyser.disconnect();
+        out.disconnect();
+        compressor.disconnect();
+        audioSources[containerId].connect(compressor); // Connetto l'oscillatore al compressore
         compressor.connect(out); // Connetto compressore al gain
         out.connect(analyser); //Connetto il compressore all'output
         analyser.connect(c.destination);
@@ -250,10 +283,11 @@ function compOnOff(state_comp) {
 
         
     } else {
+        audioSources[containerId].disconnect();
         analyser.disconnect();
         out.disconnect();
         compressor.disconnect(); // Scollego il compressore
-        source.connect(c.destination); // Collego l'oscillatore
+        audioSources[containerId].connect(c.destination); // Collego l'oscillatore
         // Disabilita il VU meter (smette di essere aggiornato)
         clearInterval(intervalId); // Pulisce l'intervallo che aggiorna il VU meter
     }
@@ -317,8 +351,10 @@ function updateRel(df_rel) {
 
 function toggle_comp() {
     state_comp = !state_comp;
-    compOnOff(state_comp);
     const button = document.getElementById("toggle_comp");
     button.textContent = state_comp ? "Compression On" : "Compression Off";
+    selectedTracks.forEach((containerId) => {
+    compOnOff(state_comp, containerId); });
+    
 }
 
