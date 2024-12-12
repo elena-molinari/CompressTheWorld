@@ -35,7 +35,6 @@ body {
     border-color: #555;
 }
 
-
 /*TENDINA*/
 /* Stile generale per il contenitore della tendina */
 .dropdown {
@@ -211,7 +210,7 @@ body {
 .pause-button {
     width: 60px; /* Dimensioni del cerchio */
     height: 60px;
-    margin-left: 10px;
+    margin-left: 5px;
     background-color: #0078D4; /* Colore di sfondo blu */
     border-radius: 50%; /* Per rendere il div circolare */
     display: flex;
@@ -241,6 +240,40 @@ body {
 
 .pause-button:hover {
     background-color: darkblue;
+}
+
+.backward-button {
+    margin-left: 5px;
+    width: 60px; /* Dimensioni del cerchio */
+    height: 60px;
+    background-color: #0078D4; /* Colore di sfondo blu */
+    border-radius: 50%; /* Per rendere il div circolare */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Aggiunge un'ombra */
+}
+
+.backward-button::before,
+.backward-button::after {
+    content: '';
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 10px 16px 10px 0; /* Triangolo (Alto, Destra, Basso, Sinistra) */
+    border-color: transparent #ffffff transparent transparent; /* Triangolo bianco */
+}
+
+.backward-button::before {
+    left: 15px;
+}
+
+.backward-button::after {
+    margin-right: 5px;
+}
+
+.backward-button:hover {
+    background-color:darkblue;
 }
 
 #toggle_comp {
@@ -312,7 +345,7 @@ body {
     transform: rotate(20deg);
     transform-origin:100%  0%;
     position:absolute;
-    bottom: 30px; 
+    bottom: 40px; 
     left: 30px; 
     transition: transform .05s;
     z-index:9;
@@ -322,8 +355,8 @@ body {
     width:90px;
     height:40px;
     position:absolute;
-    bottom:30px;
-    left:200px;
+    bottom:40px;
+    left:205px;
     z-index:1;
     overflow:hidden;
 }
@@ -366,7 +399,7 @@ body {
     border-radius:100%;
     background:#333;
     position:absolute;
-    top:50%;
+    top:45%;
 }
   
 .meterLine {
@@ -383,24 +416,24 @@ body {
     width:300px;
     height:300px;
     position:absolute;
-    left:50px;
+    left:60px;
     top:40px;
     border-radius:100%;
-    border:solid 3.5px black;
+    border:solid 4px black;
 }
   
 .meterLine .danger {
     width:30%;
     position:absolute;
     height:150px;
-    left:200px;
-    top:50px;
+    left:257px;
+    top:60px;
     overflow:hidden;
 }
   
 .meterLine .danger span.base {
     position:absolute;
-    left:-150px;
-    top:10px;
+    left:-200px;
+    top:-20px;
     border:solid 8px #a00;
 }

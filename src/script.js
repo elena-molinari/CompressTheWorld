@@ -53,14 +53,21 @@ function playTracks() {
 };
 
 
-
-
-
 // Funzione globale per Pause
 function pauseTracks() {
     selectedTracks.forEach((containerId) => {
         if (waveSurfers[containerId]) {
             waveSurfers[containerId].pause();
+        }
+    });
+   
+}
+
+// Funzione globale per reset tracce
+function backTracks() {
+    selectedTracks.forEach((containerId) => {
+        if (waveSurfers[containerId]) {
+            waveSurfers[containerId].skip(-60);
         }
     });
    
@@ -85,11 +92,6 @@ function uploadTrack(fileInputId, audioPlayerId, containerId) {
                 audioPlayer.load();
                 audioPlayer.currentTime = 0;
                 console.log("entra")
-            }
-
-            if (audioPlayer.src){
-            audioPlayer.src = fileURL;
-            audioPlayer.load();
             }
 
             initWaveSurfer(containerId, fileURL, audioPlayer);
@@ -124,7 +126,7 @@ function initWaveSurfer(containerId, fileURL, audioPlayer) {
         container: container,
         waveColor: 'violet',
         progressColor: 'purple',
-        height: 95,
+        height: 98,
         url: fileURL,
         dragToSeek: true,
         media: audioPlayer,
