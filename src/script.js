@@ -7,6 +7,7 @@ let audioSources = {}
 let waveSurfers = {};
 // Per memorizzare le tracce selezionate
 let selectedTracks = new Set(); 
+let selectedTracks = new Set(); 
 // Parametri di default per il compressore
 let df_th = -50;
 let df_knee = 40;
@@ -16,6 +17,7 @@ let df_rel = 0.25;
 let currentValue;
 let isFirstClick = true;
 let intervalId;
+let originalGain;
 let originalGain;
 
 //Creo un unico compressore! una sola volta.
@@ -30,13 +32,17 @@ let dataArray = new Uint8Array(bufferLength);  // Array per memorizzare i dati d
 // Funzione per selezionare o deselezionare una traccia
 function toggleTrackSelection(containerId) {
     const button = document.getElementById(`selectBtn_${containerId}`);
+    const toggle = document.getElementById("toggle_comp");//questo è il bottone compressor on/off
     if (selectedTracks.has(containerId)) {
         selectedTracks.delete(containerId);
         button.classList.remove("selected"); // Svuota il pallino
         waveSurfers[containerId].pause();
+        waveSurfers[containerId].pause();
     } else {
         selectedTracks.add(containerId);
         button.classList.add("selected"); // Riempie il pallino
+        //compOnOff(true);
+        //toggle.textContent = "Compression On";
     }
 }
 
@@ -46,7 +52,10 @@ function playTracks() {
             waveSurfers[containerId].play();
         }
     });
-}
+};
+
+
+
 
 
 // Funzione globale per Pause
@@ -63,12 +72,30 @@ function pauseTracks() {
 function uploadTrack(fileInputId, audioPlayerId, containerId) {
     let fileInput = document.getElementById(fileInputId);
     let audioPlayer = document.getElementById(audioPlayerId);
+    let fileInput = document.getElementById(fileInputId);
+    let audioPlayer = document.getElementById(audioPlayerId);
 
     fileInput.click();
 
     fileInput.addEventListener("change", (event) => {
         let file = event.target.files[0];
+        let file = event.target.files[0];
         if (file) {
+            
+            
+            let fileURL = URL.createObjectURL(file);
+           
+
+            //resettare audioPlayer
+            if (audioPlayer.src){
+                audioPlayer.pause();
+                audioPlayer.src="";
+                audioPlayer.load();
+                audioPlayer.currentTime = 0;
+                console.log("entra")
+            }
+
+            if (audioPlayer.src){
             
             
             let fileURL = URL.createObjectURL(file);
@@ -87,12 +114,16 @@ function uploadTrack(fileInputId, audioPlayerId, containerId) {
             audioPlayer.src = fileURL;
             audioPlayer.load();
             }
+            audioPlayer.load();
+            }
 
             initWaveSurfer(containerId, fileURL, audioPlayer);
             
         } else {
             alert("Nessun file audio selezionato!");
         }
+    }, {once : true});
+    
     }, {once : true});
     
 }
@@ -106,7 +137,14 @@ function initWaveSurfer(containerId, fileURL, audioPlayer) {
    button.classList.add("selected");
 
 
+    //appena uploado la traccia il pallino viene attivato subito
+    const button = document.getElementById(`selectBtn_${containerId}`);
+   selectedTracks.add(containerId);
+   button.classList.add("selected");
+
+
     if (waveSurfers[containerId]) {
+        console.log("distrugge forma d'onda prec")
         console.log("distrugge forma d'onda prec")
        //eliminando correttamente l'istanza precedente o sovrascrivi la stessa.
         waveSurfers[containerId].destroy(); // Distruggi l'istanza precedente
@@ -116,6 +154,7 @@ function initWaveSurfer(containerId, fileURL, audioPlayer) {
 
     fileURL.controls = true //in modo da poter controllare la traccia dalla waverform
 
+    let container = document.getElementById(containerId);
     let container = document.getElementById(containerId);
     const waveSurfer = WaveSurfer.create({
         container: container,
@@ -132,12 +171,20 @@ function initWaveSurfer(containerId, fileURL, audioPlayer) {
         audioSources[containerId].disconnect();
     }
     audioSources[containerId] = c.createMediaElementSource(audioPlayer);
+
+    if (audioSources[containerId]) {
+        audioSources[containerId].disconnect();
+    }
+    audioSources[containerId] = c.createMediaElementSource(audioPlayer);
     out = c.createGain();
     
+    compOnOff(state_comp,  containerId);
     compOnOff(state_comp,  containerId);
     
 
     // Associa l'istanza WaveSurfer al contenitore
+    waveSurfers[containerId] = waveSurfer
+  
     waveSurfers[containerId] = waveSurfer
   
 }
@@ -147,7 +194,7 @@ function initWaveSurfer(containerId, fileURL, audioPlayer) {
 function updateMakeUpGain() {
     if (isFirstClick) {
          // Salva il gain originale prima di applicare il Make-Up Gain
-        originalGain = out.gain.value;
+         originalGain = out.gain.value;
 
         // Leggi la riduzione attuale del compressore
         const reduction = compressor.reduction; // In dB, valore negativo
@@ -161,6 +208,10 @@ function updateMakeUpGain() {
         isFirstClick = false;
     }
 }
+
+
+
+
 
 function resetMakeUpGain() {
     out.gain.setValueAtTime(originalGain, c.currentTime);
@@ -270,9 +321,11 @@ function compOnOff(state, containerId) {
         
     } else {
         audioSources[containerId].disconnect();
+        audioSources[containerId].disconnect();
         analyser.disconnect();
         out.disconnect();
         compressor.disconnect(); // Scollego il compressore
+        audioSources[containerId].connect(c.destination); // Collego l'oscillatore
         audioSources[containerId].connect(c.destination); // Collego l'oscillatore
         // Disabilita il VU meter (smette di essere aggiornato)
         clearInterval(intervalId); // Pulisce l'intervallo che aggiorna il VU meter
@@ -388,7 +441,12 @@ function updateThreshold(df_th) {
         resetMakeUpGain();
         isFirstClick = true;
         }
+    if (!isFirstClick) {
+        resetMakeUpGain();
+        isFirstClick = true;
+        }
     compressor.threshold.setValueAtTime(df_th, c.currentTime);
+   
    
 }
 
@@ -397,7 +455,12 @@ function updateRatio(df_ratio) {
         resetMakeUpGain();
         isFirstClick = true;
         }
+    if (!isFirstClick) {
+        resetMakeUpGain();
+        isFirstClick = true;
+        }
     compressor.ratio.setValueAtTime(df_ratio, c.currentTime);
+   
    
 }
 
@@ -406,11 +469,20 @@ function updateKnee(df_knee) {
         resetMakeUpGain();
         isFirstClick = true;
         }
+    if (!isFirstClick) {
+        resetMakeUpGain();
+        isFirstClick = true;
+        }
     compressor.knee.setValueAtTime(df_knee, c.currentTime);
+ 
  
 }
 
 function updateAtt(df_att) {
+    if (!isFirstClick) {
+        resetMakeUpGain();
+        isFirstClick = true;
+        }
     if (!isFirstClick) {
         resetMakeUpGain();
         isFirstClick = true;
@@ -423,6 +495,10 @@ function updateRel(df_rel) {
         resetMakeUpGain();
         isFirstClick = true;
         }
+    if (!isFirstClick) {
+        resetMakeUpGain();
+        isFirstClick = true;
+        }
     compressor.release.setValueAtTime(df_rel, c.currentTime);
 }
 
@@ -430,6 +506,9 @@ function toggle_comp() {
     state_comp = !state_comp;
     const button = document.getElementById("toggle_comp");
     button.textContent = state_comp ? "Compression On" : "Compression Off";
+    selectedTracks.forEach((containerId) => {
+    compOnOff(state_comp, containerId); });
+    
     selectedTracks.forEach((containerId) => {
     compOnOff(state_comp, containerId); });
     
