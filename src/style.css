@@ -189,7 +189,7 @@ body {
 /* Stile per il contenitore dei parametri */
 #param_comp {
     display: flex;
-    margin-top: 2.5%;
+    /* margin-top: 2.5%; */
     align-items: center;
     gap: 10px; /* Spazio tra i controlli */
 }
@@ -226,9 +226,9 @@ input[type="range"] {
 
 /*VU METER*/
 #VUmeter {
-border : 5px solid  black;
-margin-top: 20px;    
-margin-left: 42%;
+    border : 5px solid  black;
+    margin-top: 20px;    
+    margin-left: 42%;
  }
 
 

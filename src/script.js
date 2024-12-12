@@ -16,7 +16,7 @@ let df_att = 0.003;
 let df_rel = 0.25; 
 let isFirstClick = true;
 let intervalId;
-let  originalGain;
+let originalGain;
 
 //Creo un unico compressore! una sola volta.
 createCompressor();  
@@ -33,6 +33,7 @@ createCompressor();
 // Funzione per selezionare o deselezionare una traccia
 function toggleTrackSelection(containerId) {
     const button = document.getElementById(`selectBtn_${containerId}`);
+    const toggle = document.getElementById("toggle_comp");//questo è il bottone compressor on/off
     if (selectedTracks.has(containerId)) {
         selectedTracks.delete(containerId);
         button.classList.remove("selected"); // Svuota il pallino
@@ -40,6 +41,8 @@ function toggleTrackSelection(containerId) {
     } else {
         selectedTracks.add(containerId);
         button.classList.add("selected"); // Riempie il pallino
+        //compOnOff(true);
+        //toggle.textContent = "Compression On";
     }
 }
 
@@ -48,8 +51,8 @@ function playTracks() {
         if (waveSurfers[containerId]) {
             waveSurfers[containerId].play();
         }
-      });
-    };
+    });
+};
 
 
 
@@ -118,7 +121,7 @@ function initWaveSurfer(containerId, fileURL, audioPlayer) {
         waveSurfers[containerId].destroy(); // Distruggi l'istanza precedente
         delete waveSurfers[containerId]; // Rimuovi l'istanza dalla memoria
     }
-
+    
 
     fileURL.controls = true //in modo da poter controllare la traccia dalla waverform
 
