@@ -17,6 +17,8 @@ let currentValue;
 let isFirstClick = true;
 let intervalId;
 let originalGain;
+// Variabile per tenere traccia dello stato di riproduzione
+let isPlaying = false;
 
 //Creo un unico compressore! una sola volta.
 createCompressor();  
@@ -35,7 +37,6 @@ function toggleTrackSelection(containerId) {
         selectedTracks.delete(containerId);
         button.classList.remove("selected"); // Svuota il pallino
         waveSurfers[containerId].pause();
-        waveSurfers[containerId].pause();
     } else {
         selectedTracks.add(containerId);
         button.classList.add("selected"); // Riempie il pallino
@@ -48,12 +49,11 @@ function playTracks() {
     selectedTracks.forEach((containerId) => {
         if (waveSurfers[containerId]) {
             waveSurfers[containerId].play();
+            isPlaying = true; // Aggiorna lo stato
+            console.log("isPlaying = true")
         }
     });
 };
-
-
-
 
 
 // Funzione globale per Pause
@@ -61,11 +61,26 @@ function pauseTracks() {
     selectedTracks.forEach((containerId) => {
         if (waveSurfers[containerId]) {
             waveSurfers[containerId].pause();
+            isPlaying = false; // Aggiorna lo stato
+            console.log("isPlaying = false")
         }
     });
-   
 }
 
+// Aggiungi un listener per il tasto spazio
+document.addEventListener("keydown", function(event) {
+    // Verifica se il tasto premuto è la barra spaziatrice
+    if (event.code === "Space") {
+        event.preventDefault(); // Previene lo scrolling della pagina quando si preme la barra spaziatrice
+        if (isPlaying) {
+            pauseTracks(); // Ferma le tracce
+            console.log("stoppato grazie alla space bar");
+        } else {
+            playTracks(); // Avvia le tracce
+            console.log("avviato grazie alla space bar");
+        }
+    }
+});
 // Carica una nuova traccia
 function uploadTrack(fileInputId, audioPlayerId, containerId) {
     let fileInput = document.getElementById(fileInputId);
@@ -87,10 +102,8 @@ function uploadTrack(fileInputId, audioPlayerId, containerId) {
                 console.log("entra")
             }
 
-            if (audioPlayer.src){
             audioPlayer.src = fileURL;
             audioPlayer.load();
-            }
 
             initWaveSurfer(containerId, fileURL, audioPlayer);
             
@@ -106,7 +119,7 @@ function initWaveSurfer(containerId, fileURL, audioPlayer) {
     //appena uploado la traccia il pallino viene attivato subito
     const button = document.getElementById(`selectBtn_${containerId}`);
     selectedTracks.add(containerId);
-     button.classList.add("selected");
+    button.classList.add("selected");
 
 
     if (waveSurfers[containerId]) {
@@ -124,7 +137,7 @@ function initWaveSurfer(containerId, fileURL, audioPlayer) {
         container: container,
         waveColor: 'violet',
         progressColor: 'purple',
-        height: 95,
+        height: 62,
         url: fileURL,
         dragToSeek: true,
         media: audioPlayer,
@@ -172,7 +185,7 @@ function resetMakeUpGain() {
 }
 
 
-function selectTrack() {
+function selectTrack(containerId, audioPlayerId) {
     // Apri una nuova finestra
     const newWindow = window.open("", "_blank");
 
@@ -195,21 +208,76 @@ function selectTrack() {
                     text-align: center;
                     color: #333;
                 }
-                .placeholder {
+                ul {
+                    list-style-type: none;
+                    padding: 0;
+                }
+                li {
+                    background: #fff;
+                    margin: 10px 0;
+                    padding: 10px;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
                     display: flex;
-                    justify-content: center;
+                    justify-content: space-between;
                     align-items: center;
-                    height: 80vh;
-                    color: #999;
-                    font-size: 18px;
+                }
+                li a {
+                    text-decoration: none;
+                    color: #007BFF;
+                }
+                li a:hover {
+                    text-decoration: underline;
                 }
             </style>
         </head>
         <body>
             <h1>Select Track</h1>
-            <div class="placeholder">
-                <p>This page is under construction. Add tracks dynamically here.</p>
-            </div>
+            <ul id="track-list">
+                <li>Loading tracks...</li>
+            </ul>
+            <script>
+                function displayTracks() {
+                    console.log("Displaying tracks...");
+
+                    // Array di link delle tracce audio
+                    const tracks = [
+                        { name: "Lucy Dacus 1", url: "https://polimi365-my.sharepoint.com/:u:/g/personal/10992455_polimi_it/ESss-zpNySFKmmeh89i9INEBaBtwLxpFdrpHp8AM5zynhQ"},
+                        { name: "Lucy Dacus 2", url: "https://polimi365-my.sharepoint.com/:u:/g/personal/10992455_polimi_it/EW-4bSdpfOBAhGpYN3rDjuABAZOShnY2cJFmzRI0yglA2g"},
+                    ];
+
+                    const trackList = document.getElementById("track-list");
+                    trackList.innerHTML = ""; // Pulisci i contenuti
+
+                    if (tracks.length === 0) {
+                        console.log("No tracks provided.");
+                        trackList.innerHTML = "<li>No tracks found</li>";
+                    } else {
+                        tracks.forEach(track => {
+                            console.log("Adding track:", track.name);
+                            const li = document.createElement("li");
+                            const link = document.createElement("a");
+                            link.href = "javascript:void(0)"; // Prevent default navigation
+                            link.dataset.url = track.url;
+                            link.textContent = track.name;
+                            link.onclick = (event) => {
+                                event.preventDefault();
+                                if (window.opener && typeof window.opener.initWaveSurfer === "function") {
+                                    window.opener.initWaveSurfer('${containerId}', track.url, window.opener.document.getElementById('${audioPlayerId}'));
+                                    window.close(); // Close the window after selection
+                                } else {
+                                    console.error("initWaveSurfer not found in the parent window.");
+                                }
+                            };
+                            li.appendChild(link);
+                            trackList.appendChild(li);
+                        });
+                    }
+                }
+
+                // Mostra le tracce al caricamento della pagina
+                displayTracks();
+            </script>
         </body>
         </html>
     `);
@@ -217,6 +285,8 @@ function selectTrack() {
     // Chiudi il documento per renderlo visibile
     newWindow.document.close();
 }
+
+
 
 function toggleDropdown(dropdownId) {
     const dropdown = document.getElementById(dropdownId);
@@ -240,6 +310,7 @@ window.onclick = function (event) {
         });
     }
 };
+
 
 
 function compOnOff(state, containerId) {
