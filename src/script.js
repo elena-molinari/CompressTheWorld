@@ -81,6 +81,16 @@ document.addEventListener("keydown", function(event) {
         }
     }
 });
+// Funzione globale per reset tracce
+function backTracks() {
+    selectedTracks.forEach((containerId) => {
+        if (waveSurfers[containerId]) {
+            waveSurfers[containerId].skip(-60);
+        }
+    });
+   
+}
+
 // Carica una nuova traccia
 function uploadTrack(fileInputId, audioPlayerId, containerId) {
     let fileInput = document.getElementById(fileInputId);
@@ -137,7 +147,7 @@ function initWaveSurfer(containerId, fileURL, audioPlayer) {
         container: container,
         waveColor: 'violet',
         progressColor: 'purple',
-        height: 62,
+        height: 98,
         url: fileURL,
         dragToSeek: true,
         media: audioPlayer,
