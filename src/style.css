@@ -120,7 +120,8 @@ body {
 #param_comp {
     display: flex;
     width: 330px;
-    margin-right: 40px;
+    margin-right: 20px;
+    margin-top: 40px;
     flex-direction: column;
     justify-content: center;
 }
@@ -129,14 +130,20 @@ body {
 .knob-rowb{
     display: flex;
     justify-content: space-around;
-    gap: 30px;
+    gap: 50px;
+}
+
+.knob-rowb {
+    margin-top: 30px;
+    margin-left: 80px;
 }
 
 
 /* Contenitore di ciascun knob */
 .knob-container {
     margin-bottom: 10px;
-    width: 100px; /* Larghezza del knob */
+    left: 100px;
+    width: 120px; /* Larghezza del knob */
     height: 120px; /* Altezza del knob */
     display: flex;
     position: relative;
@@ -158,7 +165,7 @@ body {
 
 .knob-label {
     position:absolute;
-    margin-top: 80px; /* Sposta il testo sotto il knob */
+    margin-top: 90px; /* Sposta il testo sotto il knob */
     font-size: 20px;
     text-align: center;
     color: #0f100f; /* Stesso colore del knob */
@@ -168,6 +175,7 @@ body {
 #activate_comp {
     display:flex;
     margin-top: 10px;
+    margin-right: 130px;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -179,6 +187,14 @@ body {
     display: flex;
     justify-content: center;
     gap: 10px;
+}
+
+.button-rowb{
+    margin-top: 20px;
+}
+
+.button-rowl {
+    margin-top: 20px;
 }
 
 .play-button {
@@ -316,6 +332,26 @@ body {
     background-color:darkblue;
 }
 
+#downloadButton {
+    width: 150px; /* Larghezza del bottone */
+    height: 60px; /* Altezza del bottone */
+    margin-left: 100px;
+    background-color: #0078D4; /* Colore di sfondo blu */
+    border-radius: 30px; /* Bordo arrotondato per un ovale */
+    color: #ffffff; /* Testo bianco */
+    font-size: 14px; /* Dimensione del testo */
+    font-family: Arial, sans-serif; /* Font del testo */
+    text-align: center; /* Centrare il testo orizzontalmente */
+    line-height: 60px; /* Centrare il testo verticalmente */
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Aggiunge un'ombra */
+    transition: all 0.2s ease; /* Animazione per hover */
+}
+
+#downloadButton:hover {
+    background-color:darkblue;
+}
+
 
 
 /*VU METER*/
@@ -325,6 +361,7 @@ body {
     align-items: center;
     width: 550px; /* Occupa il 50% dello spazio */
     justify-content: center;
+    margin-left: 100px;
 }
 
 #VUmeter {
