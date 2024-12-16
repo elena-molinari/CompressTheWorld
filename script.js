@@ -2,7 +2,7 @@ const c = new AudioContext();
 let compressor;
 let state_comp = false;
 let source;
-let audioSources = {}
+let audioSources = {};
 // Per memorizzare le waveform delle tracce selezionate
 let waveSurfers = {};
 // Per memorizzare le tracce selezionate
@@ -139,7 +139,15 @@ function initWaveSurfer(containerId, fileURL, audioPlayer) {
         delete waveSurfers[containerId]; // Rimuovi l'istanza dalla memoria
     }
 
+    if (audioSources[containerId]) {
+        audioSources[containerId].disconnect();
+        delete audioSources[containerId];
+    }
 
+    // Assicurati che l'audioPlayer non sia già associato a un MediaElementSourceNode 
+    if (audioPlayer.srcObject) { 
+        audioPlayer.srcObject = null; 
+    }
     fileURL.controls = true //in modo da poter controllare la traccia dalla waverform
 
     let container = document.getElementById(containerId);
@@ -153,10 +161,6 @@ function initWaveSurfer(containerId, fileURL, audioPlayer) {
         media: audioPlayer,
     });
 
-
-    if (audioSources[containerId]) {
-        audioSources[containerId].disconnect();
-    }
     
     audioSources[containerId] = c.createMediaElementSource(audioPlayer);
     out = c.createGain();
