@@ -54,7 +54,6 @@ function playTracks() {
     });
 };
 
-
 // Funzione globale per Pause
 function pauseTracks() {
     selectedTracks.forEach((containerId) => {
@@ -182,7 +181,6 @@ function initWaveSurfer(containerId, fileURL) {
     waveSurfers[containerId] = waveSurfer  
 }
 
-
 // Aggiorna il gain MakeUP in base al controllo manuale
 function updateMakeUpGain() {
     if (isFirstClick) {
@@ -202,13 +200,10 @@ function updateMakeUpGain() {
     }
 }
 
-
-
 function resetMakeUpGain() {
     out.gain.setValueAtTime(originalGain, c.currentTime);
     //console.log("Make-Up Gain resettato al volume originale.");
 }
-
 
 function selectTrack(containerId, audioPlayerId) {
     // Apri una nuova finestra
@@ -311,8 +306,6 @@ function selectTrack(containerId, audioPlayerId) {
     newWindow.document.close();
 }
 
-
-
 function toggleDropdown(dropdownId) {
     const dropdown = document.getElementById(dropdownId);
     if (dropdown) {
@@ -321,7 +314,6 @@ function toggleDropdown(dropdownId) {
         console.error(`Dropdown con ID '${dropdownId}' non trovato.`);
     }
 }
-
 
 window.onclick = function (event) {
     // Se il clic non è su un pulsante con classe 'dropdown-btn'
@@ -335,8 +327,6 @@ window.onclick = function (event) {
         });
     }
 };
-
-
 
 function compOnOff(state, containerId) {
     if (state) {
@@ -389,6 +379,148 @@ function createCompressor() {
         compressor.release.setValueAtTime(df_rel, c.currentTime);
     }
 }
+
+
+
+async function downloadTracks() {
+    if (selectedTracks.size === 0) {
+        alert("Nessuna traccia selezionata!");
+        return;
+    }
+
+    // Calcola la durata più lunga tra le tracce selezionate
+    const durations = await Promise.all(
+        Array.from(selectedTracks).map(async (containerId) => {
+            const audioElement = document.getElementById(`audio_${containerId}`);
+            return audioElement ? getAudioDuration(audioElement.src) : 0;
+        })
+    );
+    const maxDuration = Math.max(...durations);
+
+    if (maxDuration === 0) {
+        alert("Non è stato possibile determinare la durata delle tracce!");
+        return;
+    }
+
+    // Chiedi all'utente il nome del file
+    const fileName = prompt("Inserisci il nome del file da scaricare:", "mixed_compressed_audio.wav");
+    if (!fileName) return;
+
+    // Configura OfflineAudioContext per mixaggio
+    const sampleRate = c.sampleRate;
+    const offlineContext = new OfflineAudioContext(2, sampleRate * maxDuration, sampleRate);
+
+    // Crea il compressore con i parametri aggiornati
+    let compressor = offlineContext.createDynamicsCompressor();
+    compressor.threshold.setValueAtTime(df_th, offlineContext.currentTime);
+    compressor.knee.setValueAtTime(df_knee, offlineContext.currentTime);
+    compressor.ratio.setValueAtTime(df_ratio, offlineContext.currentTime);
+    compressor.attack.setValueAtTime(df_att, offlineContext.currentTime);
+    compressor.release.setValueAtTime(df_rel, offlineContext.currentTime);
+
+    // Carica e mixa le tracce selezionate
+    const promises = [];
+    selectedTracks.forEach((containerId) => {
+        const audioElement = document.getElementById(`audio_${containerId}`);
+        if (audioElement && audioElement.src) {
+            promises.push(loadAndMixTrack(audioElement.src, offlineContext));
+        }
+    });
+
+    const sources = await Promise.all(promises);
+
+    // Connetti le sorgenti al compressore
+    sources.forEach((source) => {
+        source.connect(compressor);
+    });
+    compressor.connect(offlineContext.destination);
+
+    // Renderizza l'audio offline
+    const renderedBuffer = await offlineContext.startRendering();
+
+    // Converti il buffer renderizzato in un Blob audio .wav
+    const wavBlob = bufferToWave(renderedBuffer, renderedBuffer.length);
+
+    // Scarica il file audio risultante
+    const url = URL.createObjectURL(wavBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName.endsWith('.wav') ? fileName : `${fileName}.wav`;
+    a.click();
+    URL.revokeObjectURL(url); // Libera l'URL creato
+}
+
+// Funzione per ottenere la durata di un file audio
+async function getAudioDuration(audioSrc) {
+    const audio = new Audio(audioSrc);
+    return new Promise((resolve) => {
+        audio.addEventListener('loadedmetadata', () => resolve(audio.duration));
+    });
+}
+
+// Funzione per caricare una traccia e mixarla nel contesto offline
+async function loadAndMixTrack(audioSrc, offlineContext) {
+    const response = await fetch(audioSrc);
+    const arrayBuffer = await response.arrayBuffer();
+    const decodedBuffer = await offlineContext.decodeAudioData(arrayBuffer);
+
+    const bufferSource = offlineContext.createBufferSource();
+    bufferSource.buffer = decodedBuffer;
+    bufferSource.start(0);
+
+    return bufferSource;
+}
+
+// Funzione per convertire il buffer audio in formato .wav
+function bufferToWave(abuffer, len) {
+    const numOfChan = abuffer.numberOfChannels;
+    const length = len * numOfChan * 2 + 44;
+    const buffer = new ArrayBuffer(length);
+    const view = new DataView(buffer);
+    const channels = [];
+    let i, sample, offset = 0;
+    let pos = 0;
+
+    const setUint16 = (data) => { view.setUint16(pos, data, true); pos += 2; };
+    const setUint32 = (data) => { view.setUint32(pos, data, true); pos += 4; };
+
+    // RIFF chunk descriptor
+    setUint32(0x46464952); // "RIFF"
+    setUint32(length - 8); // File length - 8
+    setUint32(0x45564157); // "WAVE"
+
+    // FMT sub-chunk
+    setUint32(0x20746D66); // "fmt "
+    setUint32(16); // Subchunk1Size
+    setUint16(1); // AudioFormat
+    setUint16(numOfChan); // NumChannels
+    setUint32(abuffer.sampleRate); // SampleRate
+    setUint32(abuffer.sampleRate * 2 * numOfChan); // ByteRate
+    setUint16(numOfChan * 2); // BlockAlign
+    setUint16(16); // BitsPerSample
+
+    // Data sub-chunk
+    setUint32(0x61746164); // "data"
+    setUint32(length - pos - 4); // Subchunk2Size
+
+    for (i = 0; i < numOfChan; i++) {
+        channels.push(abuffer.getChannelData(i));
+    }
+
+    while (pos < length) {
+        for (i = 0; i < numOfChan; i++) {
+            sample = Math.max(-1, Math.min(1, channels[i][offset]));
+            sample = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
+            view.setInt16(pos, sample, true);
+            pos += 2;
+        }
+        offset++;
+    }
+
+    return new Blob([buffer], { type: 'audio/wav' });
+}
+
+
 
 /* KNOBS*/
 // Knob per Threshold
@@ -489,8 +621,6 @@ function updateThreshold(df_th) {
         isFirstClick = true;
         }
     compressor.threshold.setValueAtTime(df_th, c.currentTime);
-   
-   
 }
 
 function updateRatio(df_ratio) {
@@ -499,8 +629,6 @@ function updateRatio(df_ratio) {
         isFirstClick = true;
         }
     compressor.ratio.setValueAtTime(df_ratio, c.currentTime);
-   
-   
 }
 
 function updateKnee(df_knee) {
@@ -509,8 +637,6 @@ function updateKnee(df_knee) {
         isFirstClick = true;
         }
     compressor.knee.setValueAtTime(df_knee, c.currentTime);
- 
- 
 }
 
 function updateAtt(df_att) {
