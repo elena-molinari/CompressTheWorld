@@ -1,7 +1,6 @@
 const c = new AudioContext();
 let compressor;
 let state_comp = false;
-let source;
 let audioSources = {};
 // Per memorizzare le waveform delle tracce selezionate
 let waveSurfers = {};
@@ -115,7 +114,7 @@ function uploadTrack(fileInputId, audioPlayerId, containerId) {
             audioPlayer.src = fileURL;
             audioPlayer.load();
 
-            initWaveSurfer(containerId, fileURL, audioPlayer);
+            initWaveSurfer(containerId, fileURL);
             
         } else {
             alert("Nessun file audio selezionato!");
@@ -124,7 +123,7 @@ function uploadTrack(fileInputId, audioPlayerId, containerId) {
 }
 
 // Inizializza WaveSurfer con il file audio
-function initWaveSurfer(containerId, fileURL, audioPlayer) {
+function initWaveSurfer(containerId, fileURL) {
 
     //appena uploado la traccia il pallino viene attivato subito
     const button = document.getElementById(`selectBtn_${containerId}`);
@@ -142,14 +141,27 @@ function initWaveSurfer(containerId, fileURL, audioPlayer) {
     if (audioSources[containerId]) {
         audioSources[containerId].disconnect();
         delete audioSources[containerId];
+        console.log("distrugge audioplayer precedente")
     }
 
-    // Assicurati che l'audioPlayer non sia già associato a un MediaElementSourceNode 
-    if (audioPlayer.srcObject) { 
-        audioPlayer.srcObject = null; 
+    // Rimuovi il vecchio elemento audio, se esiste
+    const oldAudioPlayer = document.getElementById(`audio_${containerId}`);
+    if (oldAudioPlayer) {
+        oldAudioPlayer.pause(); // Assicurati che l'audio sia fermo
+        oldAudioPlayer.src = ""; // Svuota la sorgente
+        oldAudioPlayer.load(); // Reset del player
+        oldAudioPlayer.remove(); // Rimuovi dal DOM
+        console.log("Elemento audio precedente rimosso.");
     }
-    fileURL.controls = true //in modo da poter controllare la traccia dalla waverform
 
+    // Crea un nuovo elemento audio
+    let audioPlayer = document.createElement('audio');
+    audioPlayer.id = `audio_${containerId}`;
+    audioPlayer.src = fileURL;
+    audioPlayer.controls = true; // Opzionale, per controllare manualmente la riproduzione
+    document.body.appendChild(audioPlayer);
+
+    // Creo forma d'onda
     let container = document.getElementById(containerId);
     const waveSurfer = WaveSurfer.create({
         container: container,
@@ -161,7 +173,6 @@ function initWaveSurfer(containerId, fileURL, audioPlayer) {
         media: audioPlayer,
     });
 
-    
     audioSources[containerId] = c.createMediaElementSource(audioPlayer);
     out = c.createGain();
     
