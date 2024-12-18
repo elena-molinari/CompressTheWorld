@@ -483,7 +483,7 @@ function createCompressor() {
 }
 
 
-
+/*DOWNLOAD*/
 async function downloadTracks() {
     if (selectedTracks.size === 0) {
         alert("Nessuna traccia selezionata!");
@@ -505,20 +505,35 @@ async function downloadTracks() {
     }
 
     // Chiedi all'utente il nome del file
-    const fileName = prompt("Inserisci il nome del file da scaricare:", "mixed_compressed_audio.wav");
+    const fileName = prompt("Inserisci il nome del file da scaricare:", "compressed_audio.wav");
     if (!fileName) return;
 
     // Configura OfflineAudioContext per mixaggio
     const sampleRate = c.sampleRate;
     const offlineContext = new OfflineAudioContext(2, sampleRate * maxDuration, sampleRate);
 
-    // Crea il compressore con i parametri aggiornati
-    let compressor = offlineContext.createDynamicsCompressor();
-    compressor.threshold.setValueAtTime(df_th, offlineContext.currentTime);
-    compressor.knee.setValueAtTime(df_knee, offlineContext.currentTime);
-    compressor.ratio.setValueAtTime(df_ratio, offlineContext.currentTime);
-    compressor.attack.setValueAtTime(df_att, offlineContext.currentTime);
-    compressor.release.setValueAtTime(df_rel, offlineContext.currentTime);
+    // Ottieni i valori attuali dei parametri dai knob
+    const thresholdValue = parseFloat(document.getElementById('th_knob').value) || df_th;
+    const kneeValue = parseFloat(document.getElementById('knee_knob').value) || df_knee;
+    const ratioValue = parseFloat(document.getElementById('ratio_knob').value) || df_ratio;
+    const attackValue = parseFloat(document.getElementById('att_knob').value) || df_att;
+    const releaseValue = parseFloat(document.getElementById('rel_knob').value) || df_rel;
+
+     // Crea il compressore dinamico e imposta i parametri
+     const compressoroff = offlineContext.createDynamicsCompressor();
+     compressoroff.threshold.setValueAtTime(thresholdValue, offlineContext.currentTime);
+     compressoroff.knee.setValueAtTime(kneeValue, offlineContext.currentTime);
+     compressoroff.ratio.setValueAtTime(ratioValue, offlineContext.currentTime);
+     compressoroff.attack.setValueAtTime(attackValue, offlineContext.currentTime);
+     compressoroff.release.setValueAtTime(releaseValue, offlineContext.currentTime);
+
+     // Configura il nodo di make-up gain offline
+    const makeupGainNodeoff = offlineContext.createGain();
+
+    // Ottieni il valore corrente del nodo GainNode (make-up gain) dal contesto in tempo reale
+    const currentMakeUpGain = out.gain.value; // Assumi che "out" sia il nodo GainNode originale
+    makeupGainNodeoff.gain.setValueAtTime(currentMakeUpGain, offlineContext.currentTime); // Applica il guadagno
+
 
     // Carica e mixa le tracce selezionate
     const promises = [];
@@ -533,9 +548,11 @@ async function downloadTracks() {
 
     // Connetti le sorgenti al compressore
     sources.forEach((source) => {
-        source.connect(compressor);
+        source.connect(compressoroff);
     });
-    compressor.connect(offlineContext.destination);
+    compressoroff.connect(makeupGainNodeoff);
+    makeupGainNodeoff.connect(offlineContext.destination); // Connetti alla destinazione
+
 
     // Renderizza l'audio offline
     const renderedBuffer = await offlineContext.startRendering();
@@ -621,7 +638,6 @@ function bufferToWave(abuffer, len) {
 
     return new Blob([buffer], { type: 'audio/wav' });
 }
-
 
 
 /* KNOBS*/
