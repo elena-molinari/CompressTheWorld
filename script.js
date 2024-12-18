@@ -18,9 +18,27 @@ let intervalId;
 let originalGain;
 // Variabile per tenere traccia dello stato di riproduzione
 let isPlaying = false;
+// Inizializza Dropbox con il tuo access token
+const dropbox = new Dropbox.Dropbox({ accessToken: 'sl.u.AFaQoQaBPuaGsrAXrOZ_jXcA6wU9XH50LmL9pVj-22sgPynQu_gwcEyvdzQHXRiHbhCHWfKEZj578PwfPtpwVHw9nZeHvOCUA5MCsJieRGSNx8fOsOjIPAjlCSHt6SD4sFHnqEtE9TR-GQjhpmIxigr9lcIHvxIlWXZKjvJ7VwM8c_73TstYQ5p1bkRQ2ybKQzInvdB3Rmz2j5VpUG8yRS4qwLfkKfq7v6mpoCl-N4i6qqB96O3VX9lW2Ht1KXXHCwK7QiDGB-oSJBS0rLL8dFR99SICu_zrj12iTqUZk7mdjiQjYAvCAdjWimScbLaMR6CpGuVwfLjw0YMPZaUDrGwBhs0XeMJF134pPVBzKywoBQcznA-cFp94qb4lUwBp6uLEuy64DBwzIpkWZxkfMGnpTeychQD1w1LT2NtgXbR2koSieaeqgfPDV-prUqXsgDmjuqZ5Lgp36OmhOucF3cUZwlUdvbU3NXxInt8wWh5vF42t_WIJkLN0WzKnhqX_6c3T-bKQVimRqeMaoKmrSKDv4omV5nhTBqhwP3EW4kVgVUh3c-b84PswKcoX4UFHKmkZG_oa6gHYC4sm-tOJhqh0dCnJz48YIcTjQFKRv_o8uBb8yD-DYtOMitzTWvO6gED5KlwbeMYlu-acJHw8PA9PQjHxT1VJfkoKfYtUZlvSjSRGC15kP-CxnngTMewniDx27ySHYJmhz1oKX7A6b9ayuwXtWNSmkmWMMjeXqV_4W0AB49XKGraexdxIqJdA9EFLdnCIMglSLhAP0obF9PbGVo9VbqfRK1gNjW2iF8wfZ7EYR2z7TsW2XWwVWZN0gK8VWQS4wKU8VRr0tKU6Fx6q4hXMG6VDZSuO_5AasjBfHjaIVapcMtlWClMFHCktGDuoV3JV-xrHZJIKztlzT0bNin6TbEFsiJ-9AzxEW5CIuWINYGnL8PB_bB6OPfAVlR4wiZsl6WCqEdat0ND8orb55IjG6Dmnm662yXWF-05404Qx-LjIK1dYgZPl28_7p4eWIsjRun38hAIJy0AZLl4Q_ndKwdteR8UOzlztwuFAOPafWkq1ZfqGb8r2pLBsvzrkPJfpVrUnA1mKynQNnti5EDRF7bBYDZNhbfUbDaXHdj6d1KFjtJg--rp_n8cOEBx_hcSc270vKws441O3S4OmFC5vhND-080Nr4RnC_IQwGs8gFNMfnHAzQ1YJLeMwlz2kZSBnRiV4i2cham6Hie46nJix1N1aBDvRVnmAbpsPANJFmXAAplrTHxWSmS5FUBLo2ol_8asVlMYn_8Sm3u1' });
+
 
 //Creo un unico compressore! una sola volta.
 createCompressor();  
+// Funzione per verificare se l'access token è valido
+function checkAccessToken() {
+    dropbox.usersGetCurrentAccount()
+        .then(function(response) {
+            console.log("Access token valido!", response);
+            // Se la richiesta ha successo, l'access token è valido
+        })
+        .catch(function(error) {
+            console.error("Errore: access token non valido o scaduto", error);
+            // Se l'access token non è valido, gestisci l'errore
+        });
+}
+
+// Chiamata alla funzione per verificare l'access token
+checkAccessToken();
 
 analyser = c.createAnalyser();
 /* Imposta le proprietà dell'analizzatore */
@@ -123,7 +141,7 @@ function uploadTrack(fileInputId, audioPlayerId, containerId) {
 
 // Inizializza WaveSurfer con il file audio
 function initWaveSurfer(containerId, fileURL) {
-
+    console.log("entrato in init");
     //appena uploado la traccia il pallino viene attivato subito
     const button = document.getElementById(`selectBtn_${containerId}`);
     selectedTracks.add(containerId);
@@ -159,7 +177,11 @@ function initWaveSurfer(containerId, fileURL) {
     audioPlayer.src = fileURL;
     audioPlayer.controls = true; // Opzionale, per controllare manualmente la riproduzione
     document.body.appendChild(audioPlayer);
-
+    console.log("audioPlayer.src:", audioPlayer.src);
+    audioPlayer.addEventListener('loadeddata', () => {
+        console.log("File audio caricato correttamente.");
+    });
+    
     // Creo forma d'onda
     let container = document.getElementById(containerId);
     const waveSurfer = WaveSurfer.create({
@@ -177,6 +199,59 @@ function initWaveSurfer(containerId, fileURL) {
     
     compOnOff(state_comp,  containerId);
     
+    // Associa l'istanza WaveSurfer al contenitore
+    waveSurfers[containerId] = waveSurfer  
+}
+function initWaveSurfer2(containerId, fileURL, audioPlayerId) {
+
+    //appena uploado la traccia il pallino viene attivato subito
+    const button = document.getElementById(`selectBtn_${containerId}`);
+    selectedTracks.add(containerId);
+    button.classList.add("selected");
+
+
+    if (waveSurfers[containerId]) {
+        console.log("distrugge forma d'onda prec")
+       //eliminando correttamente l'istanza precedente o sovrascrivi la stessa.
+        waveSurfers[containerId].destroy(); // Distruggi l'istanza precedente
+        delete waveSurfers[containerId]; // Rimuovi l'istanza dalla memoria
+    }
+
+
+    fileURL.controls = true //in modo da poter controllare la traccia dalla waverform
+
+    let container = document.getElementById(containerId);
+    let audioPlayer =  document.getElementById(audioPlayerId);
+    // Verifica che audioPlayer sia valido
+    if (!audioPlayer) {
+        console.error(`Audio player con ID "${audioPlayerId}" non trovato.`);
+        return;
+    }
+
+    // Carica il file nel player audio
+    audioPlayer.src = fileURL;
+    audioPlayer.load();
+
+    const waveSurfer = WaveSurfer.create({
+        container: container,
+        waveColor: 'violet',
+        progressColor: 'purple',
+        height: 98,
+        url: fileURL,
+        dragToSeek: true,
+        media: audioPlayer,
+    });
+
+
+    if (audioSources[containerId]) {
+        audioSources[containerId].disconnect();
+    }
+
+    audioSources[containerId] = c.createMediaElementSource(audioPlayer);
+    out = c.createGain();
+
+    compOnOff(state_comp,  containerId);
+
     // Associa l'istanza WaveSurfer al contenitore
     waveSurfers[containerId] = waveSurfer  
 }
@@ -205,11 +280,27 @@ function resetMakeUpGain() {
     //console.log("Make-Up Gain resettato al volume originale.");
 }
 
-function selectTrack(containerId, audioPlayerId) {
-    // Apri una nuova finestra
-    const newWindow = window.open("", "_blank");
 
-    // Aggiungi il contenuto base della nuova pagina
+// Funzione per ottenere l'URL temporaneo di un file
+function getFileUrl(filePath, callback) {
+    dropbox.filesGetTemporaryLink({ path: filePath })
+        .then(response => {
+            console.log("Risposta API Dropbox:", response);
+            callback(response.result.link); // Passa l'URL al callback
+        })
+        .catch(error => {
+            console.error("Errore durante il recupero dell'URL:", error);
+        });
+}
+
+function selectTrack(containerId, audioPlayerId) {
+    const files = [
+        { name: "Lucy Dacus 1", path: "/Lucy_Dacus_London.mp3" },
+        { name: "Lucy Dacus 2", path: "/Lucy_Dacus_NewYork.mp3" }, // Aggiungi altri file qui
+    ];
+
+    // Apri una nuova finestra e scrivi il contenuto HTML
+    const newWindow = window.open("", "_blank");
     newWindow.document.write(`
         <!DOCTYPE html>
         <html lang="en">
@@ -257,36 +348,45 @@ function selectTrack(containerId, audioPlayerId) {
                 <li>Loading tracks...</li>
             </ul>
             <script>
+                // Funzione per visualizzare la lista dei brani
                 function displayTracks() {
-                    console.log("Displaying tracks...");
-
-                    // Array di link delle tracce audio
-                    const tracks = [
-                        { name: "Lucy Dacus 1", url: "https://polimi365-my.sharepoint.com/:u:/g/personal/10992455_polimi_it/ESss-zpNySFKmmeh89i9INEBaBtwLxpFdrpHp8AM5zynhQ"},
-                        { name: "Lucy Dacus 2", url: "https://polimi365-my.sharepoint.com/:u:/g/personal/10992455_polimi_it/EW-4bSdpfOBAhGpYN3rDjuABAZOShnY2cJFmzRI0yglA2g"},
-                    ];
+                    const files = ${JSON.stringify(files)}; // Passa i dati statici
 
                     const trackList = document.getElementById("track-list");
-                    trackList.innerHTML = ""; // Pulisci i contenuti
+                    trackList.innerHTML = "";
 
-                    if (tracks.length === 0) {
-                        console.log("No tracks provided.");
+                    if (files.length === 0) {
                         trackList.innerHTML = "<li>No tracks found</li>";
                     } else {
-                        tracks.forEach(track => {
-                            console.log("Adding track:", track.name);
+                        files.forEach(file => {
                             const li = document.createElement("li");
                             const link = document.createElement("a");
-                            link.href = "javascript:void(0)"; // Prevent default navigation
-                            link.dataset.url = track.url;
-                            link.textContent = track.name;
+                            link.href = "javascript:void(0)";
+                            link.textContent = file.name;
                             link.onclick = (event) => {
                                 event.preventDefault();
-                                if (window.opener && typeof window.opener.initWaveSurfer === "function") {
-                                    window.opener.initWaveSurfer('${containerId}', track.url, window.opener.document.getElementById('${audioPlayerId}'));
-                                    window.close(); // Close the window after selection
+                                // Chiama la funzione getFileUrl per recuperare l'URL al momento della selezione
+                                if (window.opener) {
+                                    const getFileUrl = window.opener.getFileUrl;
+                                    if (typeof getFileUrl === "function") {
+                                        getFileUrl(file.path, (url) => {
+                                            if (url) {
+                                                // Chiama initWaveSurfer nella finestra principale
+                                                if (typeof window.opener.initWaveSurfer === "function") {
+                                                    window.opener.initWaveSurfer('${containerId}', url);
+                                                    window.close();
+                                                } else {
+                                                    console.error("initWaveSurfer non è disponibile nella finestra principale.");
+                                                }
+                                            } else {
+                                                console.error("Errore nel recupero dell'URL.");
+                                            }
+                                        });
+                                    } else {
+                                        console.error("getFileUrl non è definita nella finestra principale.");
+                                    }
                                 } else {
-                                    console.error("initWaveSurfer not found in the parent window.");
+                                    console.error("Nessuna finestra principale trovata.");
                                 }
                             };
                             li.appendChild(link);
@@ -295,16 +395,18 @@ function selectTrack(containerId, audioPlayerId) {
                     }
                 }
 
-                // Mostra le tracce al caricamento della pagina
                 displayTracks();
             </script>
         </body>
         </html>
     `);
-
-    // Chiudi il documento per renderlo visibile
     newWindow.document.close();
 }
+
+
+
+
+
 
 function toggleDropdown(dropdownId) {
     const dropdown = document.getElementById(dropdownId);
