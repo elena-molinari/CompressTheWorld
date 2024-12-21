@@ -176,6 +176,7 @@ function initWaveSurfer(containerId, fileURL) {
     let audioPlayer = document.createElement('audio');
     audioPlayer.id = `audio_${containerId}`;
     audioPlayer.src = fileURL;
+    audioPlayer.style.display = 'none'; // Nasconde l'elemento
     audioPlayer.controls = true; // Opzionale, per controllare manualmente la riproduzione
     document.body.appendChild(audioPlayer);
     console.log("audioPlayer.src:", audioPlayer.src);
