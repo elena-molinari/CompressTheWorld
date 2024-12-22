@@ -107,6 +107,28 @@ function backTracks() {
     });
    
 }
+// Funzione per ripristinare i valori di default dei knob
+function resetKnobs() {
+    // Imposta i valori di default per ogni knob
+    $('#th_knob').val(-50).trigger('change');
+    $('#ratio_knob').val(12).trigger('change');
+    $('#knee_knob').val(40).trigger('change');
+    $('#att_knob').val(0.003).trigger('change');
+    $('#rel_knob').val(0.25).trigger('change');
+    
+    // Rimuovi i valori dal localStorage
+    localStorage.removeItem('threshold');
+    localStorage.removeItem('ratio');
+    localStorage.removeItem('knee');
+    localStorage.removeItem('attack');
+    localStorage.removeItem('release');
+}
+
+// Aggiungi un event listener al pulsante di reset
+$('#resetKnobsButton').on('click', function() {
+    resetKnobs(); // Ripristina i valori di default
+});
+
 
 // Carica una nuova traccia
 function uploadTrack(fileInputId, audioPlayerId, containerId) {
@@ -243,7 +265,7 @@ function getFileUrl(filePath, callback) {
         });
 }
 
-function selectTrack(containerId, audioPlayerId) {
+function selectTrack(containerId) {
     const files = [
         { name: "Lucy Dacus 1", path: "/Lucy_Dacus_London.mp3" },
         { name: "Lucy Dacus 2", path: "/Lucy_Dacus_NewYork.mp3" }, // Aggiungi altri file qui
@@ -352,9 +374,6 @@ function selectTrack(containerId, audioPlayerId) {
     `);
     newWindow.document.close();
 }
-
-
-
 
 
 
@@ -591,6 +610,30 @@ function bufferToWave(abuffer, len) {
 
 
 /* KNOBS*/
+// Al caricamento della pagina, verifica se esistono valori salvati nei localStorage
+$(document).ready(function() {
+    // Recupera i valori da localStorage e aggiorna i knob
+    if (localStorage.getItem('threshold')) {
+        $('#th_knob').val(localStorage.getItem('threshold')).trigger('change');
+    }
+
+    if (localStorage.getItem('ratio')) {
+        $('#ratio_knob').val(localStorage.getItem('ratio')).trigger('change');
+    }
+
+    if (localStorage.getItem('knee')) {
+        $('#knee_knob').val(localStorage.getItem('knee')).trigger('change');
+    }
+
+    if (localStorage.getItem('attack')) {
+        $('#att_knob').val(localStorage.getItem('attack')).trigger('change');
+    }
+
+    if (localStorage.getItem('release')) {
+        $('#rel_knob').val(localStorage.getItem('release')).trigger('change');
+    }
+});
+
 // Knob per Threshold
 $('#th_knob').knob({
     min: -100,
@@ -606,6 +649,7 @@ $('#th_knob').knob({
     rotation: 'clockwise',
     release: function (v) {
         updateThreshold(v);
+        localStorage.setItem('threshold', v);
     }
 })
 
@@ -624,6 +668,7 @@ $('#ratio_knob').knob({
     rotation: 'clockwise',
     release: function (v) {
         updateRatio(v);
+        localStorage.setItem('ratio', v);
     }
 });
 
@@ -642,6 +687,7 @@ $('#knee_knob').knob({
     rotation: 'clockwise',
     release: function (v) {
         updateKnee(v);
+        localStorage.setItem('knee', v);
     }
 });
 
@@ -660,6 +706,7 @@ $('#att_knob').knob({
     rotation: 'clockwise',
     release: function (v) {
         updateAtt(v);
+        localStorage.setItem('attack', v);
     }
 });
 
@@ -678,6 +725,7 @@ $('#rel_knob').knob({
     rotation: 'clockwise',
     release: function (v) {
         updateRel(v);
+        localStorage.setItem('release', v);
     }
 });
 
@@ -728,6 +776,5 @@ function toggle_comp() {
     const button = document.getElementById("toggle_comp");
     button.textContent = state_comp ? "Compression On" : "Compression Off";
     selectedTracks.forEach((containerId) => {
-    compOnOff(state_comp, containerId); });
-    
+    compOnOff(state_comp, containerId); });   
 }

@@ -351,7 +351,25 @@ body {
 #downloadButton:hover {
     background-color:darkblue;
 }
+#resetKnobsButton {
+    width: 150px; /* Larghezza del bottone */
+    height: 60px; /* Altezza del bottone */
+    margin-left: 100px;
+    background-color: #0078D4; /* Colore di sfondo blu */
+    border-radius: 30px; /* Bordo arrotondato per un ovale */
+    color: #ffffff; /* Testo bianco */
+    font-size: 14px; /* Dimensione del testo */
+    font-family: Arial, sans-serif; /* Font del testo */
+    text-align: center; /* Centrare il testo orizzontalmente */
+    line-height: 60px; /* Centrare il testo verticalmente */
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Aggiunge un'ombra */
+    transition: all 0.2s ease; /* Animazione per hover */
+}
 
+#resetKnobsButton:hover {
+    background-color:darkblue;
+}
 
 
 /*VU METER*/
