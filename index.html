@@ -21,11 +21,7 @@
     <div id="top-half">
         <!-- Dropdown 1 -->
         <div class="dropdown">
-            <button class="dropdown-btn" onclick="toggleDropdown('dropdownContent1')">+</button>
-            <div class="dropdown-content" id="dropdownContent1">
-                <p onclick="selectTrack('wv1')">Select track</p>
-                <p onclick="uploadTrack('audioFileInput1', 'audioPlayer1', 'wv1')">Upload track</p>
-            </div>
+            <button class="track-btn" onclick="uploadTrack('audioFileInput1', 'audioPlayer1', 'wv1')">+</button>
             <div class="waveform-container" id="wv1"></div> 
             <button id="selectBtn_wv1" class="select-btn" onclick="toggleTrackSelection('wv1')"></button>
         </div>   
@@ -35,11 +31,7 @@
         
         <!-- Dropdown 2 -->
         <div class="dropdown">
-            <button class="dropdown-btn" onclick="toggleDropdown('dropdownContent2')">+</button>
-            <div class="dropdown-content" id="dropdownContent2">
-                <p onclick="selectTrack('wv2')">Select track</p>
-                <p onclick="uploadTrack('audioFileInput2', 'audioPlayer2', 'wv2')">Upload track</p>
-            </div>
+            <button class="track-btn" onclick="uploadTrack('audioFileInput2', 'audioPlayer2', 'wv2')">+</button>
             <div class="waveform-container" id="wv2"></div> 
             <button id="selectBtn_wv2" class="select-btn" onclick="toggleTrackSelection('wv2')"></button>
         </div>
@@ -49,11 +41,7 @@
 
         <!-- Dropdown 3 -->
         <div class="dropdown">
-            <button class="dropdown-btn" onclick="toggleDropdown('dropdownContent3')">+</button>
-            <div class="dropdown-content" id="dropdownContent3">
-                <p onclick="selectTrack('wv3')">Select track</p>
-                <p onclick="uploadTrack('audioFileInput3', 'audioPlayer3', 'wv3')">Upload track</p>
-            </div>
+            <button class="track-btn" onclick="uploadTrack('audioFileInput3', 'audioPlayer3', 'wv3')">+</button>
             <div class="waveform-container" id="wv3"></div>
             <button id="selectBtn_wv3" class="select-btn" onclick="toggleTrackSelection('wv3')"></button>
         </div>    
@@ -63,23 +51,24 @@
 
         <!-- Dropdown 4 -->
         <div class="dropdown">
-            <button class="dropdown-btn" onclick="toggleDropdown('dropdownContent4')">+</button>
-            <div class="dropdown-content" id="dropdownContent4">
-                <p onclick="selectTrack('wv4')">Select track</p>
-                <p onclick="uploadTrack('audioFileInput4', 'audioPlayer4', 'wv4')">Upload track</p>
-            </div>
+            <button class="track-btn" onclick="uploadTrack('audioFileInput4', 'audioPlayer4', 'wv4')">+</button>
             <div class="waveform-container" id="wv4"></div>
             <button id="selectBtn_wv4" class="select-btn" onclick="toggleTrackSelection('wv4')"></button>
         </div>    
         <!-- Hidden file input, triggered programmatically -->
         <input type="file" id="audioFileInput4" accept="audio/*" style="display: none;">
         <audio id="audioPlayer4" controls style="display: none;"></audio>
+        <!--Gestione tracce-->
+        <div class="button-rowt">
+            <button class="backward-button" onclick="backTracks()"></button>
+            <button class="play-button"  onclick="playTracks()"></button>
+            <button class="pause-button" onclick="pauseTracks()"></button>
+        </div>
     </div>
 
 
     <!--Second part of the page-->        
     <div class="bottom-half">
-
         <!-- Input Knobs -->
         <div id="param_comp">
             <div class="knob-rowt">
@@ -139,11 +128,6 @@
 
         <!--Tasti gestione traccia e compressione--> 
         <div id="activate_comp">
-            <div class="button-rowt">
-                <button class="backward-button" onclick="backTracks()"></button>
-                <button class="play-button"  onclick="playTracks()"></button>
-                <button class="pause-button" onclick="pauseTracks()"></button>
-            </div>
             <div class="button-rowb">
                 <button id="toggle_comp" onclick="toggle_comp()">Compression Off</button>
                 <button id="makeupGain" onclick="updateMakeUpGain()">Make-Up</button>

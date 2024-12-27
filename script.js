@@ -18,30 +18,13 @@ let intervalId;
 let originalGain;
 // Variabile per tenere traccia dello stato di riproduzione
 let isPlaying = false;
-// Inizializza Dropbox con il tuo access token
-let access_token = 'sl.u.AFb3uVaFpYDRzp4WUZJsWbhXAdjHOyKoYLF-MrDh1QoGQz63IG4UyQuoqQk0Vh3p8nolxoeCbid2hiB-TdJMAcYkMqJx9FN2y94qssp7YHNyzTEftFg7MChb47SCK-8Gp4A0Ftps28r1iE8gYw4-xycB1rBlGqY74cIYHeA4GF6MIIxlcIdIFwSwxhzAlDbX6by1p0mUBX-UZvDm7uqxM_9Ow5BWX8598IqM2yNtksoyF0K42uuUjxtLWkYztd_n3eW_LONbiiHt_B9ZzNFDnpBNV5GvgESg2jG-Ayqo4Uh6Y3QFa9ETFqelsQ9hkgM-QrzZaPGYioy7zqCsSZ9uxUkoWK3KzAKNZM--NX3I_uZqq6IjRhS0BXcBkrkzFm8PRjg6rQ79xUwE9WJNrf6rqW6-fd8STIGS26dW29QrKoceSSOmibnfElXEIekDi4yrgkdqhNmJ4hUdt1889Im6-JGXLad9xqXv0PvVpcc5mfs0C3GF6RlPi2EZ2xd-MBGC92OSTj4rS1ayQ_dB_jodhBSNSfopxlXFZwpmUazKc9q7UpSCTuHi3Ac979o0Cnf-YrwRyIn-joAN5aiW3z_UXRy3PpfXWKOkZ5-6h-7VdvBT5UhD4KV0bdkhctA-fTmFwpIV9NoFQngimw160yib7J7cbQ-jUQMLBREsUFLJ5zsJhhOH5yxYycRWBW02BzoUHduZWR84izx9t4zAVMbk4ILYxDogNyq4r4iXReqc72jOsbYfhcTV7F8aihwqMKRQG7Xp6Dt1n9gaGCdWU6rwTj8-sOP9V7RugQo3rXvqzLp6MWVoiS0WL9jgLCJSv08Z9VlMdryoSr5jmgkF77rKwHQT8wHF052nB__v4PSSTJ4JNpwwrMSmSn5Qhj82BbsvEL165UzGZRDvbEKLsD36ro_XtJYA7hJ4eadSosidNcs1DoSKGhHT8ntpOeZcH_u5JGscTxsQiPbevPXn-_4vRVglppS0xA8b0yLnJ4AZz6UTbE-ZS_crO1xgGBNTkbteqf9xI_kUmJsmvaKinYrVi2u365iNS5LSQlxW9b5jjQmat55pcYrPNHUI53D85Yr3-yo6yn2YnnH7PVeIqDg-UB6-GFiueq7Az851ZZSZeCN4PEYkNUL1pcVJ5zL1MHbe1X9b8VEweEZ1VAB-Mr49xcg7YftHbmBgX1yXCr6Zn66d4Wel3NfYhvCS1aoaifBXnCYXFBlIM1-fpcopxPNUiJnq5FMbpuV1brauGdjqetP-6BZqJq76Je9dFzfFRFkvnIax-ABDK8_LuFaW7n_o8sJy';
-const dropbox = new Dropbox.Dropbox({ accessToken: access_token });
 
 
 //Creo un unico compressore! una sola volta.
 createCompressor();  
-// Funzione per verificare se l'access token è valido
-function checkAccessToken() {
-    dropbox.usersGetCurrentAccount()
-        .then(function(response) {
-            console.log("Access token valido!", response);
-            // Se la richiesta ha successo, l'access token è valido
-        })
-        .catch(function(error) {
-            console.error("Errore: access token non valido o scaduto", error);
-            // Se l'access token non è valido, gestisci l'errore
-        });
-}
-
-// Chiamata alla funzione per verificare l'access token
-checkAccessToken();
 
 analyser = c.createAnalyser();
+
 /* Imposta le proprietà dell'analizzatore */
 analyser.fftSize = 256;  // Imposta la dimensione dell'FFT
 let bufferLength = analyser.frequencyBinCount;  // Ottieni il numero di bins di frequenza
@@ -251,131 +234,6 @@ function resetMakeUpGain() {
     out.gain.setValueAtTime(originalGain, c.currentTime);
     //console.log("Make-Up Gain resettato al volume originale.");
 }
-
-
-// Funzione per ottenere l'URL temporaneo di un file
-function getFileUrl(filePath, callback) {
-    dropbox.filesGetTemporaryLink({ path: filePath })
-        .then(response => {
-            console.log("Risposta API Dropbox:", response);
-            callback(response.result.link); // Passa l'URL al callback
-        })
-        .catch(error => {
-            console.error("Errore durante il recupero dell'URL:", error);
-        });
-}
-
-function selectTrack(containerId) {
-    const files = [
-        { name: "Lucy Dacus 1", path: "/Lucy_Dacus_London.mp3" },
-        { name: "Lucy Dacus 2", path: "/Lucy_Dacus_NewYork.mp3" }, // Aggiungi altri file qui
-    ];
-
-    // Apri una nuova finestra e scrivi il contenuto HTML
-    const newWindow = window.open("", "_blank");
-    newWindow.document.write(`
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Select Track</title>
-            <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    margin: 0;
-                    padding: 20px;
-                    background-color: #f5f5f5;
-                }
-                h1 {
-                    text-align: center;
-                    color: #333;
-                }
-                ul {
-                    list-style-type: none;
-                    padding: 0;
-                }
-                li {
-                    background: #fff;
-                    margin: 10px 0;
-                    padding: 10px;
-                    border: 1px solid #ddd;
-                    border-radius: 5px;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                }
-                li a {
-                    text-decoration: none;
-                    color: #007BFF;
-                }
-                li a:hover {
-                    text-decoration: underline;
-                }
-            </style>
-        </head>
-        <body>
-            <h1>Select Track</h1>
-            <ul id="track-list">
-                <li>Loading tracks...</li>
-            </ul>
-            <script>
-                // Funzione per visualizzare la lista dei brani
-                function displayTracks() {
-                    const files = ${JSON.stringify(files)}; // Passa i dati statici
-
-                    const trackList = document.getElementById("track-list");
-                    trackList.innerHTML = "";
-
-                    if (files.length === 0) {
-                        trackList.innerHTML = "<li>No tracks found</li>";
-                    } else {
-                        files.forEach(file => {
-                            const li = document.createElement("li");
-                            const link = document.createElement("a");
-                            link.href = "javascript:void(0)";
-                            link.textContent = file.name;
-                            link.onclick = (event) => {
-                                event.preventDefault();
-                                // Chiama la funzione getFileUrl per recuperare l'URL al momento della selezione
-                                if (window.opener) {
-                                    const getFileUrl = window.opener.getFileUrl;
-                                    if (typeof getFileUrl === "function") {
-                                        getFileUrl(file.path, (url) => {
-                                            if (url) {
-                                                // Chiama initWaveSurfer nella finestra principale
-                                                if (typeof window.opener.initWaveSurfer === "function") {
-                                                    window.opener.initWaveSurfer('${containerId}', url);
-                                                    window.close();
-                                                } else {
-                                                    console.error("initWaveSurfer non è disponibile nella finestra principale.");
-                                                }
-                                            } else {
-                                                console.error("Errore nel recupero dell'URL.");
-                                            }
-                                        });
-                                    } else {
-                                        console.error("getFileUrl non è definita nella finestra principale.");
-                                    }
-                                } else {
-                                    console.error("Nessuna finestra principale trovata.");
-                                }
-                            };
-                            li.appendChild(link);
-                            trackList.appendChild(li);
-                        });
-                    }
-                }
-
-                displayTracks();
-            </script>
-        </body>
-        </html>
-    `);
-    newWindow.document.close();
-}
-
-
 
 function toggleDropdown(dropdownId) {
     const dropdown = document.getElementById(dropdownId);
