@@ -79,7 +79,7 @@ body {
 .bottom-half {
     flex: 0.8;
     display: flex;
-    background-image: url('https://st.depositphotos.com/1003553/2356/i/450/depositphotos_23563359-stock-photo-texture-of-wood-background-closeup.jpg');
+    background-image: url('/Images/Wood.jpg');
     background-size: cover; /* Adatta l'immagine all'intero schermo */
     background-repeat: no-repeat; /* Evita che l'immagine venga ripetuta */
     background-position: center; /* Centra l'immagine */
