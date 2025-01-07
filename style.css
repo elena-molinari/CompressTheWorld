@@ -84,110 +84,6 @@ body {
     z-index: 0;
 }
 
-/* Seconda metà della pagina */
-.bottom-half {
-    flex: 0.8;
-    display: flex;
-    /*background-color:#AD1919;*/
-    background-image: url("/Images/two.jpg");
-    background-size: cover; /* Adatta l'immagine all'intero schermo */
-    background-repeat: no-repeat; /* Evita che l'immagine venga ripetuta */
-    background-position: center; /* Centra l'immagine */
-    
-    align-items: center;
-    /*height: 100vh; Riempie l'altezza della finestra */
-    justify-content: space-between; 
-    padding: 18px;
-}
-
-/* Left Panel - Knobs */
-#param_comp {
-    display: flex;
-    width: 330px;
-    margin-right: 20px;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.knob-rowt,
-.knob-rowb{
-    display: flex;
-    justify-content: space-around;
-    gap: 50px;
-}
-
-.knob-rowb {
-    margin-top: 30px;
-    margin-left: 80px;
-}
-
-
-/* Contenitore di ciascun knob */
-.knob-container {
-    margin-bottom: 10px;
-    left: 100px;
-    width: 120px; /* Larghezza del knob */
-    height: 120px; /* Altezza del knob */
-    display: flex;
-    position: relative;
-    text-align: center;
-    flex-direction: column; /* Organizza il contenuto in verticale */
-    align-items: center; /* Centra orizzontalmente il contenuto */
-    justify-content: space-between; /* Spazia il valore e l'etichetta */
-}
-
-.knob-value {
-    position: absolute;
-    top: 40%; /* Centra verticalmente il valore numerico */
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 16px; /* Regola la dimensione del testo */
-    font-weight: bold;
-    color: rgb(155, 102, 102);
-}
-
-.knob-label {
-    position:absolute;
-    margin-top: 110px; /* Sposta il testo sotto il knob */
-    font-size: 20px;
-    text-align: center;
-    color: #ffffff; 
-}
-.inner-circle {
-    position: absolute;
-    top: 15%;
-    left: 15%;
-    width: 70%;
-    height: 70%;
-    border-radius: 50%;
-    background-color: #1A2F48;
-}
-
-/*Bottoni controllo traccia*/
-#activate_comp {
-    display:flex;
-    margin-top: 8px;
-    margin-right: 130px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    width: 330px; /* Occupa il 30% dello spazio */
-}
-
-.button-rowb{
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
-
-.button-rowb{
-    margin-top: 18px;
-}
-
-.button-rowl {
-    margin-top: 18px;
-}
-
 .play-button {
     margin-left: 5px;
     width: 60px; /* Dimensioni del cerchio */
@@ -283,15 +179,123 @@ body {
     background-color:#ED1B23;
 }
 
+/* Seconda metà della pagina */
+.bottom-half {
+    flex: 0.8;
+    display: flex;
+    /*background-color:#AD1919;*/
+    background-image: url("/Images/two.jpg");
+    background-size: cover; /* Adatta l'immagine all'intero schermo */
+    background-repeat: no-repeat; /* Evita che l'immagine venga ripetuta */
+    background-position: center; /* Centra l'immagine */
+    
+    align-items: center;
+    /*height: 100vh; Riempie l'altezza della finestra */
+    justify-content: space-between; 
+    padding: 18px;
+}
+
+/* Left Panel - Knobs */
+#param_comp {
+    display: flex;
+    width: 330px;
+    margin-bottom: 18px;
+    margin-right: 20px;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.knob-rowt,
+.knob-rowb{
+    display: flex;
+    justify-content: space-around;
+    gap: 50px;
+}
+
+.knob-rowb {
+    margin-top: 30px;
+    margin-left: 80px;
+}
+
+
+/* Contenitore di ciascun knob */
+.knob-container {
+    margin-bottom: 10px;
+    left: 100px;
+    width: 120px; /* Larghezza del knob */
+    height: 120px; /* Altezza del knob */
+    display: flex;
+    position: relative;
+    text-align: center;
+    flex-direction: column; /* Organizza il contenuto in verticale */
+    align-items: center; /* Centra orizzontalmente il contenuto */
+    justify-content: space-between; /* Spazia il valore e l'etichetta */
+}
+
+.knob-value {
+    position: absolute;
+    top: 40%; /* Centra verticalmente il valore numerico */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px; /* Regola la dimensione del testo */
+    font-weight: bold;
+    color: rgb(155, 102, 102);
+}
+
+.knob-label {
+    position:absolute;
+    margin-top: 110px; /* Sposta il testo sotto il knob */
+    font-family: "Courier New";
+    font-weight: bold;
+    font-size: 20px;
+    text-align: center;
+    color: #ffffff; 
+}
+.inner-circle {
+    position: absolute;
+    top: 15%;
+    left: 15%;
+    width: 70%;
+    height: 70%;
+    border-radius: 50%;
+    background-color: #1A2F48;
+}
+
+/*Bottoni controllo traccia*/
+#activate_comp {
+    display:flex;
+    margin-bottom: 18px;
+    margin-right: 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 380px; /* Occupa il 30% dello spazio */
+}
+
+.button-rowb{
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.button-rowb{
+    margin-top: 18px;
+}
+
+.button-rowl {
+    margin-top: 18px;
+}
+
 #toggle_comp {
-    width: 150px; /* Larghezza del bottone */
+    width: 400px; /* Larghezza del bottone */
     height: 60px; /* Altezza del bottone */
     margin-left: 10px;
     background-color: #1A2F48; /* Colore di sfondo blu */
     border-radius: 30px; /* Bordo arrotondato per un ovale */
     color: #ffffff; /* Testo bianco */
-    font-size: 16px; /* Dimensione del testo */
-    font-family: Arial, sans-serif; /* Font del testo */
+    font-size: 20px; /* Dimensione del testo */
+    font-family: "Courier New";
+    font-weight: bold;
     text-align: center; /* Centrare il testo orizzontalmente */
     line-height: 60px; /* Centrare il testo verticalmente */
     cursor: pointer;
@@ -304,14 +308,15 @@ body {
 }
 
 #makeupGain {
-    width: 150px; /* Larghezza del bottone */
+    width: 220px; /* Larghezza del bottone */
     height: 60px; /* Altezza del bottone */
     margin-left: 10px;
     background-color: #1A2F48; /* Colore di sfondo blu */
     border-radius: 30px; /* Bordo arrotondato per un ovale */
     color: #ffffff; /* Testo bianco */
-    font-size: 16px; /* Dimensione del testo */
-    font-family: Arial, sans-serif; /* Font del testo */
+    font-size: 20px; /* Dimensione del testo */
+    font-family: "Courier New";
+    font-weight: bold;
     text-align: center; /* Centrare il testo orizzontalmente */
     line-height: 60px; /* Centrare il testo verticalmente */
     cursor: pointer;
@@ -324,14 +329,15 @@ body {
 }
 
 #downloadButton {
-    width: 150px; /* Larghezza del bottone */
+    width: 200px; /* Larghezza del bottone */
     height: 60px; /* Altezza del bottone */
     margin-left: 100px;
     background-color:#1A2F48; /* Colore di sfondo blu */
     border-radius: 30px; /* Bordo arrotondato per un ovale */
     color: #ffffff; /* Testo bianco */
-    font-size: 16px; /* Dimensione del testo */
-    font-family: Arial, sans-serif; /* Font del testo */
+    font-size: 20px; /* Dimensione del testo */
+    font-family: "Courier New";
+    font-weight: bold;
     text-align: center; /* Centrare il testo orizzontalmente */
     line-height: 60px; /* Centrare il testo verticalmente */
     cursor: pointer;
@@ -344,14 +350,15 @@ body {
 }
 
 #resetKnobsButton {
-    width: 150px; /* Larghezza del bottone */
+    width: 200px; /* Larghezza del bottone */
     height: 60px; /* Altezza del bottone */
     margin-left: 100px;
     background-color: #1A2F48; /* Colore di sfondo blu */
     border-radius: 30px; /* Bordo arrotondato per un ovale */
     color: #ffffff; /* Testo bianco */
-    font-size: 16px; /* Dimensione del testo */
-    font-family: Arial, sans-serif; /* Font del testo */
+    font-size: 20px; /* Dimensione del testo */
+    font-family: "Courier New";
+    font-weight: bold;
     text-align: center; /* Centrare il testo orizzontalmente */
     line-height: 60px; /* Centrare il testo verticalmente */
     cursor: pointer;
@@ -370,7 +377,8 @@ body {
     align-items: center;
     width: 550px; /* Occupa il 50% dello spazio */
     justify-content: center;
-    margin-left: 100px;
+    margin-left: 150px;
+    margin-top: 20px;
 }
 
 #VUmeter {
