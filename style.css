@@ -6,16 +6,19 @@ body {
     flex-direction: column;
     height: 100vh;
     font-family: Arial, sans-serif;
-    overflow: hidden; /* Evita il rischio di scrolling */
+    overflow: hidden;  /*Evita il rischio di scrolling */
 }
 
 /* Prima metà della pagina */
 #top-half {
     display: grid;
     align-items: center;
-    background-color:rgb(6, 6, 73);
-    border-bottom: 5px solid black; /* Linea nera di separazione */
     padding: 8px;
+    background-color:#05232F;
+    background-size: cover; /* Adatta l'immagine all'intero schermo */
+    background-repeat: no-repeat; /* Evita che l'immagine venga ripetuta */
+    background-position: center; /* Centra l'immagine */
+
 }
 
 .select-btn {
@@ -53,6 +56,8 @@ body {
 /* Stile per il pulsante della tendina */
 #track-btn {
     background-color: #007bff;
+.track-btn {
+    background-color:  #AD1919;
     color: white;
     align-items: center;
     font-size: 20px;
@@ -66,10 +71,12 @@ body {
 
 #track-btn:hover {
     background-color: darkblue;
+.track-btn:hover {
+    background-color: #ED1B23;
 }
 
 .waveform-container {
-    border: 2.5px solid #ef6c0e;
+    border: 2.5px solid #FFD400;
     background-color: #ee8337;
     height: 100px;
     width: 90%;
@@ -85,13 +92,14 @@ body {
 .bottom-half {
     flex: 0.8;
     display: flex;
-    background-image: url('https://st.depositphotos.com/1003553/2356/i/450/depositphotos_23563359-stock-photo-texture-of-wood-background-closeup.jpg');
+    /*background-color:#AD1919;*/
+    background-image: url("/Images/two.jpg");
     background-size: cover; /* Adatta l'immagine all'intero schermo */
     background-repeat: no-repeat; /* Evita che l'immagine venga ripetuta */
     background-position: center; /* Centra l'immagine */
     
     align-items: center;
-    height: 100vh; /* Riempie l'altezza della finestra */
+    /*height: 100vh; Riempie l'altezza della finestra */
     justify-content: space-between; 
     padding: 18px;
 }
@@ -144,10 +152,19 @@ body {
 
 .knob-label {
     position:absolute;
-    margin-top: 100px; /* Sposta il testo sotto il knob */
+    margin-top: 110px; /* Sposta il testo sotto il knob */
     font-size: 20px;
     text-align: center;
-    color: #0f100f; /* Stesso colore del knob */
+    color: #ffffff; 
+}
+.inner-circle {
+    position: absolute;
+    top: 15%;
+    left: 15%;
+    width: 70%;
+    height: 70%;
+    border-radius: 50%;
+    background-color: #1A2F48;
 }
 
 /*Bottoni controllo traccia*/
@@ -179,7 +196,7 @@ body {
     margin-left: 5px;
     width: 60px; /* Dimensioni del cerchio */
     height: 60px;
-    background-color: #0078D4; /* Colore di sfondo blu */
+    background-color: #AD1919; /* Colore di sfondo blu */
     border-radius: 50%; /* Per rendere il div circolare */
     display: flex;
     justify-content: center;
@@ -193,19 +210,19 @@ body {
     height: 0;
     border-style: solid;
     border-width: 10px 0 10px 16px; /* Triangolo (Alto, Destra, Basso, Sinistra) */
-    border-color: transparent transparent transparent #ffffff; /* Triangolo bianco */
+    border-color: transparent #ffffff; /* Triangolo bianco */
     margin-left: 5px; /* Centrare il triangolo */
 }
 
 .play-button:hover {
-    background-color: darkblue;
+    background-color: #ED1B23;
 }
 
 .pause-button {
     width: 60px; /* Dimensioni del cerchio */
     height: 60px;
     margin-left: 5px;
-    background-color: #0078D4; /* Colore di sfondo blu */
+    background-color:  #AD1919; /* Colore di sfondo blu */
     border-radius: 50%; /* Per rendere il div circolare */
     display: flex;
     justify-content: center;
@@ -233,14 +250,14 @@ body {
 }
 
 .pause-button:hover {
-    background-color: darkblue;
+    background-color: #ED1B23;
 }
 
 .backward-button {
     margin-left: 5px;
     width: 60px; /* Dimensioni del cerchio */
     height: 60px;
-    background-color: #0078D4; /* Colore di sfondo blu */
+    background-color: #AD1919; /* Colore di sfondo blu */
     border-radius: 50%; /* Per rendere il div circolare */
     display: flex;
     justify-content: center;
@@ -267,17 +284,17 @@ body {
 }
 
 .backward-button:hover {
-    background-color:darkblue;
+    background-color:#ED1B23;
 }
 
 #toggle_comp {
     width: 150px; /* Larghezza del bottone */
     height: 60px; /* Altezza del bottone */
     margin-left: 10px;
-    background-color: #0078D4; /* Colore di sfondo blu */
+    background-color: #1A2F48; /* Colore di sfondo blu */
     border-radius: 30px; /* Bordo arrotondato per un ovale */
     color: #ffffff; /* Testo bianco */
-    font-size: 14px; /* Dimensione del testo */
+    font-size: 16px; /* Dimensione del testo */
     font-family: Arial, sans-serif; /* Font del testo */
     text-align: center; /* Centrare il testo orizzontalmente */
     line-height: 60px; /* Centrare il testo verticalmente */
@@ -287,17 +304,17 @@ body {
 }
 
 #toggle_comp:hover{
-    background-color:darkblue;
+    background-color:#005CA8;
 }
 
 #makeupGain {
     width: 150px; /* Larghezza del bottone */
     height: 60px; /* Altezza del bottone */
     margin-left: 10px;
-    background-color: #0078D4; /* Colore di sfondo blu */
+    background-color: #1A2F48; /* Colore di sfondo blu */
     border-radius: 30px; /* Bordo arrotondato per un ovale */
     color: #ffffff; /* Testo bianco */
-    font-size: 14px; /* Dimensione del testo */
+    font-size: 16px; /* Dimensione del testo */
     font-family: Arial, sans-serif; /* Font del testo */
     text-align: center; /* Centrare il testo orizzontalmente */
     line-height: 60px; /* Centrare il testo verticalmente */
@@ -307,17 +324,17 @@ body {
 }
 
 #makeupGain:hover {
-    background-color:darkblue;
+    background-color:#005CA8;
 }
 
 #downloadButton {
     width: 150px; /* Larghezza del bottone */
     height: 60px; /* Altezza del bottone */
     margin-left: 100px;
-    background-color: #0078D4; /* Colore di sfondo blu */
+    background-color:#1A2F48; /* Colore di sfondo blu */
     border-radius: 30px; /* Bordo arrotondato per un ovale */
     color: #ffffff; /* Testo bianco */
-    font-size: 14px; /* Dimensione del testo */
+    font-size: 16px; /* Dimensione del testo */
     font-family: Arial, sans-serif; /* Font del testo */
     text-align: center; /* Centrare il testo orizzontalmente */
     line-height: 60px; /* Centrare il testo verticalmente */
@@ -327,17 +344,17 @@ body {
 }
 
 #downloadButton:hover {
-    background-color:darkblue;
+    background-color:#005CA8;
 }
 
 #resetKnobsButton {
     width: 150px; /* Larghezza del bottone */
     height: 60px; /* Altezza del bottone */
     margin-left: 100px;
-    background-color: #0078D4; /* Colore di sfondo blu */
+    background-color: #1A2F48; /* Colore di sfondo blu */
     border-radius: 30px; /* Bordo arrotondato per un ovale */
     color: #ffffff; /* Testo bianco */
-    font-size: 14px; /* Dimensione del testo */
+    font-size: 16px; /* Dimensione del testo */
     font-family: Arial, sans-serif; /* Font del testo */
     text-align: center; /* Centrare il testo orizzontalmente */
     line-height: 60px; /* Centrare il testo verticalmente */
@@ -347,7 +364,7 @@ body {
 }
 
 #resetKnobsButton:hover {
-    background-color:darkblue;
+    background-color:#005CA8;
 }
 
 
