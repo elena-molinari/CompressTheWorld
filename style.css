@@ -55,8 +55,6 @@ body {
 
 /* Stile per il pulsante della tendina */
 #track-btn {
-    background-color: #007bff;
-.track-btn {
     background-color:  #AD1919;
     color: white;
     align-items: center;
@@ -70,8 +68,6 @@ body {
 }
 
 #track-btn:hover {
-    background-color: darkblue;
-.track-btn:hover {
     background-color: #ED1B23;
 }
 
