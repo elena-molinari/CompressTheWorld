@@ -21,7 +21,7 @@
     <div id="top-half">
         <!-- Dropdown 1 -->
         <div class="dropdown">
-            <button class="track-btn" onclick="uploadTrack('audioFileInput1', 'audioPlayer1', 'wv1')">+</button>
+            <button id="track-btn" onclick="uploadTrack('audioFileInput1', 'audioPlayer1', 'wv1')">+</button>
             <div class="waveform-container" id="wv1"></div> 
             <button id="selectBtn_wv1" class="select-btn" onclick="toggleTrackSelection('wv1')"></button>
         </div>   
@@ -31,7 +31,7 @@
         
         <!-- Dropdown 2 -->
         <div class="dropdown">
-            <button class="track-btn" onclick="uploadTrack('audioFileInput2', 'audioPlayer2', 'wv2')">+</button>
+            <button id="track-btn" onclick="uploadTrack('audioFileInput2', 'audioPlayer2', 'wv2')">+</button>
             <div class="waveform-container" id="wv2"></div> 
             <button id="selectBtn_wv2" class="select-btn" onclick="toggleTrackSelection('wv2')"></button>
         </div>
@@ -41,7 +41,7 @@
 
         <!-- Dropdown 3 -->
         <div class="dropdown">
-            <button class="track-btn" onclick="uploadTrack('audioFileInput3', 'audioPlayer3', 'wv3')">+</button>
+            <button id="track-btn" onclick="uploadTrack('audioFileInput3', 'audioPlayer3', 'wv3')">+</button>
             <div class="waveform-container" id="wv3"></div>
             <button id="selectBtn_wv3" class="select-btn" onclick="toggleTrackSelection('wv3')"></button>
         </div>    
@@ -51,7 +51,7 @@
 
         <!-- Dropdown 4 -->
         <div class="dropdown">
-            <button class="track-btn" onclick="uploadTrack('audioFileInput4', 'audioPlayer4', 'wv4')">+</button>
+            <button id="track-btn" onclick="uploadTrack('audioFileInput4', 'audioPlayer4', 'wv4')">+</button>
             <div class="waveform-container" id="wv4"></div>
             <button id="selectBtn_wv4" class="select-btn" onclick="toggleTrackSelection('wv4')"></button>
         </div>    
@@ -59,7 +59,7 @@
         <input type="file" id="audioFileInput4" accept="audio/*" style="display: none;">
         <audio id="audioPlayer4" controls style="display: none;"></audio>
         <!--Gestione tracce-->
-        <div class="button-rowt">
+        <div class="button-row">
             <button class="backward-button" onclick="backTracks()"></button>
             <button class="play-button"  onclick="playTracks()"></button>
             <button class="pause-button" onclick="pauseTracks()"></button>
@@ -105,7 +105,6 @@
                     </input>
                 </div>
             </div>
-            <button id="resetKnobsButton">Default Values</button>
         </div>
 
         <!--VUmeter-->   
@@ -128,6 +127,9 @@
 
         <!--Tasti gestione traccia e compressione--> 
         <div id="activate_comp">
+            <div class="button-rowt">
+                <button id="resetKnobsButton">Knob Reset</button>
+            </div>
             <div class="button-rowb">
                 <button id="toggle_comp" onclick="toggle_comp()">Compression Off</button>
                 <button id="makeupGain" onclick="updateMakeUpGain()">Make-Up</button>

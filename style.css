@@ -35,6 +35,12 @@ body {
     border-color: #555;
 }
 
+.button-row{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
 /*TENDINA*/
 /* Stile generale per il contenitore della tendina */
 .dropdown {
@@ -45,7 +51,7 @@ body {
 
 
 /* Stile per il pulsante della tendina */
-.track-btn {
+#track-btn {
     background-color: #007bff;
     color: white;
     align-items: center;
@@ -58,7 +64,7 @@ body {
     margin-right: 5px;
 }
 
-.track-btn:hover {
+#track-btn:hover {
     background-color: darkblue;
 }
 
@@ -147,7 +153,7 @@ body {
 /*Bottoni controllo traccia*/
 #activate_comp {
     display:flex;
-    margin-top: 10px;
+    margin-top: 8px;
     margin-right: 130px;
     display: flex;
     flex-direction: column;
@@ -155,7 +161,6 @@ body {
     width: 330px; /* Occupa il 30% dello spazio */
 }
 
-.button-rowt,
 .button-rowb{
     display: flex;
     justify-content: center;
@@ -163,11 +168,11 @@ body {
 }
 
 .button-rowb{
-    margin-top: 20px;
+    margin-top: 18px;
 }
 
 .button-rowl {
-    margin-top: 20px;
+    margin-top: 18px;
 }
 
 .play-button {
@@ -347,7 +352,6 @@ body {
 
 
 /*VU METER*/
-
 #meters{
     display:flex;
     align-items: center;
