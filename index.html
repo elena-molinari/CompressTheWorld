@@ -72,39 +72,44 @@
         <div id="param_comp">
             <div class="knob-rowt">
                 <div class="knob-container">
+                    <div class="inner-circle"></div>
                     <input id="th_knob" value="-50">
-                        <div class="knob-label">Threshold</div>
+                        <div class="knob-label">THRESHOLD</div>
                         <div class="knob-value" id="th_value"></div>
                     </input>
+                   
                 </div>
                 <div class="knob-container">
+                    <div class="inner-circle"></div>
                     <input id="ratio_knob" value="12">
-                        <div class="knob-label">Ratio</div>
+                        <div class="knob-label">RATIO</div>
                         <div class="knob-value" id="ratio_value"></div>
                     </input>
                 </div>
                 <div class="knob-container">
+                    <div class="inner-circle"></div>
                     <input id="knee_knob" value="40">
-                        <div class="knob-label">Knee</div>
+                        <div class="knob-label">KNEE</div>
                         <div class="knob-value" id="knee_value"></div>
                     </input>
                 </div>
             </div>
             <div class="knob-rowb">
                 <div class="knob-container">
+                    <div class="inner-circle"></div>
                     <input id="att_knob" value="0.003">
-                        <div class="knob-label">Attack</div>
+                        <div class="knob-label">ATTACK</div>
                         <div class="knob-value" id="att_value"></div>
                     </input>
                 </div>
                 <div class="knob-container">
+                    <div class="inner-circle"></div>
                     <input id="rel_knob" value="0.25">
-                        <div class="knob-label">Release</div>
+                        <div class="knob-label">RELEASE</div>
                         <div class="knob-value" id="rel_value"></div>
                     </input>
                 </div>
             </div>
-            <button id="resetKnobsButton">Default Values</button>
         </div>
 
         <!--VUmeter-->   
@@ -127,6 +132,7 @@
 
         <!--Tasti gestione traccia e compressione--> 
         <div id="activate_comp">
+            <button id="resetKnobsButton">Reset Values</button>
             <div class="button-rowb">
                 <button id="toggle_comp" onclick="toggle_comp()">Compression Off</button>
                 <button id="makeupGain" onclick="updateMakeUpGain()">Make-Up</button>
