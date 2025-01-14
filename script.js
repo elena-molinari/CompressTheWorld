@@ -2,11 +2,11 @@ const c = new AudioContext();
 let compressor;
 let state_comp = false;
 let audioSources = {};
-// Per memorizzare le waveform delle tracce selezionate
+// Store the selected waveforms 
 let waveSurfers = {};
-// Per memorizzare le tracce selezionate
+// Store the selected tracks
 let selectedTracks = new Set(); 
-// Parametri di default per il compressore
+// Default parameters of the compressor
 let df_th = -50;
 let df_knee = 40;
 let df_ratio = 12;
@@ -20,17 +20,17 @@ let originalGain;
 let isPlaying = false;
 
 
-//Creo un unico compressore! una sola volta.
+//Create a single compressor!
 createCompressor();  
 
 analyser = c.createAnalyser();
 
-/* Imposta le proprietà dell'analizzatore */
-analyser.fftSize = 256;  // Imposta la dimensione dell'FFT
-let bufferLength = analyser.frequencyBinCount;  // Ottieni il numero di bins di frequenza
-let dataArray = new Uint8Array(bufferLength);  // Array per memorizzare i dati di frequenza
+/* Set the properties of the analyzer for the VU meter */
+analyser.fftSize = 256;  // Set the dimension of the FFT
+let bufferLength = analyser.frequencyBinCount;  // Get the number of frequency bins
+let dataArray = new Uint8Array(bufferLength);  // Array to store frequency data
 
-// Funzione per selezionare o deselezionare una traccia
+// Function to select or deselect a track
 function toggleTrackSelection(containerId) {
     const button = document.getElementById(`selectBtn_${containerId}`);
     const toggle = document.getElementById("toggle_comp");//questo è il bottone compressor on/off
@@ -56,7 +56,7 @@ function playTracks() {
     });
 };
 
-// Funzione globale per Pause
+// Global function for Pause
 function pauseTracks() {
     selectedTracks.forEach((containerId) => {
         if (waveSurfers[containerId]) {
@@ -67,7 +67,7 @@ function pauseTracks() {
     });
 }
 
-// Aggiungi un listener per il tasto spazio
+// Add an event listener for the space key
 document.addEventListener("keydown", function(event) {
     // Verifica se il tasto premuto è la barra spaziatrice
     if (event.code === "Space") {
@@ -81,7 +81,8 @@ document.addEventListener("keydown", function(event) {
         }
     }
 });
-// Funzione globale per reset tracce
+
+// Global function to rewind tracks
 function backTracks() {
     selectedTracks.forEach((containerId) => {
         if (waveSurfers[containerId]) {
@@ -90,7 +91,8 @@ function backTracks() {
     });
    
 }
-// Funzione per ripristinare i valori di default dei knob
+
+// Function to restore default values of knobs
 function resetKnobs() {
     // Imposta i valori di default per ogni knob
     $('#th_knob').val(-50).trigger('change');
@@ -107,13 +109,13 @@ function resetKnobs() {
     localStorage.removeItem('release');
 }
 
-// Aggiungi un event listener al pulsante di reset
+// Add an event listener to reset button
 $('#resetKnobsButton').on('click', function() {
     resetKnobs(); // Ripristina i valori di default
 });
 
 
-// Carica una nuova traccia
+// Upload new track
 function uploadTrack(fileInputId, audioPlayerId, containerId) {
     let fileInput = document.getElementById(fileInputId);
     let audioPlayer = document.getElementById(audioPlayerId);
@@ -125,7 +127,7 @@ function uploadTrack(fileInputId, audioPlayerId, containerId) {
         if (file) {   
             let fileURL = URL.createObjectURL(file);
            
-            //resettare audioPlayer
+            //reset audioPlayer
             if (audioPlayer.src){
                 audioPlayer.pause();
                 audioPlayer.src="";
@@ -145,10 +147,10 @@ function uploadTrack(fileInputId, audioPlayerId, containerId) {
     }, {once : true});    
 }
 
-// Inizializza WaveSurfer con il file audio
+// Initialize WaveSurfer with the audio file
 function initWaveSurfer(containerId, fileURL) {
     console.log("entrato in init");
-    //appena uploado la traccia il pallino viene attivato subito
+    //as soon as I upload the track the dot is activated immediately
     const button = document.getElementById(`selectBtn_${containerId}`);
     selectedTracks.add(containerId);
     button.classList.add("selected");
@@ -156,9 +158,9 @@ function initWaveSurfer(containerId, fileURL) {
 
     if (waveSurfers[containerId]) {
         console.log("distrugge forma d'onda prec")
-       //eliminando correttamente l'istanza precedente o sovrascrivi la stessa.
-        waveSurfers[containerId].destroy(); // Distruggi l'istanza precedente
-        delete waveSurfers[containerId]; // Rimuovi l'istanza dalla memoria
+       //Correctly delete the previous instance 
+        waveSurfers[containerId].destroy(); // Destroy previous instance
+        delete waveSurfers[containerId]; // Remove the instance from memory
     }
 
     if (audioSources[containerId]) {
@@ -167,29 +169,29 @@ function initWaveSurfer(containerId, fileURL) {
         console.log("distrugge audioplayer precedente")
     }
 
-    // Rimuovi il vecchio elemento audio, se esiste
+    // Remove the old audio element, if it exists
     const oldAudioPlayer = document.getElementById(`audio_${containerId}`);
     if (oldAudioPlayer) {
-        oldAudioPlayer.pause(); // Assicurati che l'audio sia fermo
-        oldAudioPlayer.src = ""; // Svuota la sorgente
-        oldAudioPlayer.load(); // Reset del player
-        oldAudioPlayer.remove(); // Rimuovi dal DOM
+        oldAudioPlayer.pause(); // Make sure the audio is still
+        oldAudioPlayer.src = ""; // Empty the source
+        oldAudioPlayer.load(); // Reset of player
+        oldAudioPlayer.remove(); // Remove from the DOM
         console.log("Elemento audio precedente rimosso.");
     }
 
-    // Crea un nuovo elemento audio
+    // Create a new audio item
     let audioPlayer = document.createElement('audio');
     audioPlayer.id = `audio_${containerId}`;
     audioPlayer.src = fileURL;
-    audioPlayer.style.display = 'none'; // Nasconde l'elemento
-    audioPlayer.controls = true; // Opzionale, per controllare manualmente la riproduzione
+    audioPlayer.style.display = 'none'; // Hides the element
+    audioPlayer.controls = true; // Optional, to manually control the playback
     document.body.appendChild(audioPlayer);
     console.log("audioPlayer.src:", audioPlayer.src);
     audioPlayer.addEventListener('loadeddata', () => {
         console.log("File audio caricato correttamente.");
     });
     
-    // Creo forma d'onda
+    // creation of waveform
     let container = document.getElementById(containerId);
     const waveSurfer = WaveSurfer.create({
         container: container,
@@ -204,26 +206,26 @@ function initWaveSurfer(containerId, fileURL) {
     audioSources[containerId] = c.createMediaElementSource(audioPlayer);
     out = c.createGain();
     
-    compOnOff(state_comp,  containerId);
+    compOnOff(state_comp, containerId);
     
-    // Associa l'istanza WaveSurfer al contenitore
+    // Associates the WaveSurfer instance with the container
     waveSurfers[containerId] = waveSurfer  
 }
 
 
-// Aggiorna il gain MakeUP in base al controllo manuale
+// Update MakeUP gain based on manual control
 function updateMakeUpGain() {
     if (isFirstClick) {
-         // Salva il gain originale prima di applicare il Make-Up Gain
+         // Save the original gain before applying Make-Up Gain
          originalGain = out.gain.value;
 
-        // Leggi la riduzione attuale del compressore
-        const reduction = compressor.reduction; // In dB, valore negativo
+        // Read the current compressor reduction
+        const reduction = compressor.reduction; // In dB, negative value
 
-        // Calcola il Make-Up Gain per compensare la riduzione
-        const makeupGain = -reduction / 10; // Converti da dB a scala lineare
-        //console.log(makeupGain)
-        // Applica il Make-Up Gain al nodo GainNode (out)
+        // Calculate the Make-Up Gain to compensate for the reduction
+        const makeupGain = -reduction / 10; // Convert from dB to linear scale
+        
+        // Applies Make-Up Gain to the GainNode (out)
         out.gain.setValueAtTime((originalGain + makeupGain), c.currentTime);
         
         isFirstClick = false;
@@ -232,7 +234,6 @@ function updateMakeUpGain() {
 
 function resetMakeUpGain() {
     out.gain.setValueAtTime(originalGain, c.currentTime);
-    //console.log("Make-Up Gain resettato al volume originale.");
 }
 
 function toggleDropdown(dropdownId) {
@@ -244,46 +245,33 @@ function toggleDropdown(dropdownId) {
     }
 }
 
-window.onclick = function (event) {
-    // Se il clic non è su un pulsante con classe 'dropdown-btn'
-    if (!event.target.matches('.dropdown-btn')) {
-        // Trova tutte le tendine visibili e chiudile
-        const dropdowns = document.querySelectorAll('.dropdown-content');
-        dropdowns.forEach(dropdown => {
-            if (dropdown.style.display === "block") {
-                dropdown.style.display = "none";
-            }
-        });
-    }
-};
-
 function compOnOff(state, containerId) {
     if (state) {
-        audioSources[containerId].disconnect(); // Sconnetto l'oscillatore dall'outputù
+        audioSources[containerId].disconnect(); // I disconnect the oscillator from the output
         analyser.disconnect();
         out.disconnect();
         compressor.disconnect();
-        audioSources[containerId].connect(compressor); // Connetto l'oscillatore al compressore
-        compressor.connect(out); // Connetto compressore al gain
-        out.connect(analyser); //Connetto il compressore all'output
+        audioSources[containerId].connect(compressor); // I connect the oscillator to the compressor
+        compressor.connect(out); // I connect compressor to gain
+        out.connect(analyser); //I connect the compressor to the output
         analyser.connect(c.destination);
 
         
-        // Attiva il VU meter basato sulla riduzione del compressore
+        // Activates VU meter based on compressor reduction
         if (intervalId) clearInterval(intervalId);
         intervalId = setInterval(function() {
-            let reduction1 = compressor.reduction;  // Ottieni la riduzione in dB
+            let reduction1 = compressor.reduction;  // Get the reduction in dB
 
-            // Se il valore di riduzione è positivo (compressore non sta riducendo), lo impostiamo a 0
+            // If the reduction value is positive (compressor is not reducing), we set it to 0
             if (reduction1 > 0) reduction1 = 0;
 
-            // Mappa la riduzione (in dB) ad una rotazione (in gradi)
-            // La riduzione in dB va da 0 (senza riduzione) a -80 dB (max riduzione), quindi mappiamo questo a un range di gradi.
-            let rotation = Math.max(-reduction1 * 2, 0);  // Mappa la riduzione in dB (a valore negativo) a gradi
-            rotation = Math.min(rotation, 180);  // Limita la rotazione a 180 gradi (max valore della rotazione del needle)
+            // Map the reduction (in dB) to a rotation (in degrees).
+            // The reduction in dB ranges from 0 (no reduction) to -80 dB (max reduction), so we map this to a range of degrees.
+            let rotation = Math.max(-reduction1 * 2, 0);  // Map the reduction in dB (to negative value) to degrees
+            rotation = Math.min(rotation, 180);  // Limit rotation to 180 degrees (max value of needle rotation)
 
             let needle = document.getElementById("VUmeter").getElementsByClassName('needle')[0];
-            needle.style.transform = "rotate(" + (rotation + 20) + "deg)"; // Aggiunge un offset per evitare che l'ago si fermi a 0 gradi
+            needle.style.transform = "rotate(" + (rotation + 20) + "deg)"; // Adds an offset to prevent the needle from stopping at 0 degrees
         }, 50);
 
         
@@ -291,10 +279,10 @@ function compOnOff(state, containerId) {
         audioSources[containerId].disconnect();
         analyser.disconnect();
         out.disconnect();
-        compressor.disconnect(); // Scollego il compressore
-        audioSources[containerId].connect(c.destination); // Collego l'oscillatore
-        // Disabilita il VU meter (smette di essere aggiornato)
-        clearInterval(intervalId); // Pulisce l'intervallo che aggiorna il VU meter
+        compressor.disconnect(); // I unplug the compressor
+        audioSources[containerId].connect(c.destination); // I connect the oscillator
+        // Disables the VU meter (stops being updated)
+        clearInterval(intervalId); // Cleans up the interval that updates the VU meter
     }
 }
 
@@ -396,7 +384,7 @@ async function downloadTracks() {
     URL.revokeObjectURL(url); // Libera l'URL creato
 }
 
-// Funzione per ottenere la durata di un file audio
+// Function to obtain the duration of an audio file
 async function getAudioDuration(audioSrc) {
     const audio = new Audio(audioSrc);
     return new Promise((resolve) => {
@@ -404,7 +392,7 @@ async function getAudioDuration(audioSrc) {
     });
 }
 
-// Funzione per caricare una traccia e mixarla nel contesto offline
+// Function to upload a track and mix it in the offline context
 async function loadAndMixTrack(audioSrc, offlineContext) {
     const response = await fetch(audioSrc);
     const arrayBuffer = await response.arrayBuffer();
@@ -417,7 +405,7 @@ async function loadAndMixTrack(audioSrc, offlineContext) {
     return bufferSource;
 }
 
-// Funzione per convertire il buffer audio in formato .wav
+// Function to convert audio buffer to .wav format
 function bufferToWave(abuffer, len) {
     const numOfChan = abuffer.numberOfChannels;
     const length = len * numOfChan * 2 + 44;
@@ -468,7 +456,7 @@ function bufferToWave(abuffer, len) {
 
 
 /* KNOBS*/
-// Al caricamento della pagina, verifica se esistono valori salvati nei localStorage
+// When the page loads, it checks whether there are any values saved in the localStorage
 $(document).ready(function() {
     // Recupera i valori da localStorage e aggiorna i knob
     if (localStorage.getItem('threshold')) {
@@ -589,7 +577,7 @@ $('#rel_knob').knob({
 });
 
 
-// Funzioni di aggiornamento
+// Update functions
 function updateThreshold(df_th) {
     if (!isFirstClick) {
         resetMakeUpGain();

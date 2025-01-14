@@ -3,15 +3,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <link rel="icon" href="data:;base64,=" />
 
-    <!-- Aggiungi wavesurfer -->
+    <!-- Add wavesurfer for waveform creation -->
     <script src="https://unpkg.com/wavesurfer.js"></script>
 
-    <!-- Aggiungi jQuery -->
+    <!-- Add jQuery for knob -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-Knob/1.2.13/jquery.knob.min.js" integrity="sha256-2144q+NOM/XU6ZxSqRTJ8P0W/CkY6zXc6mXYt4+mF9s=" crossorigin="anonymous"></script>
 
     <!--File CSS-->
     <link rel="stylesheet" href="style.css">
+
     <!--File JS-->
     <script src="script.js" defer></script>
 
@@ -57,7 +58,8 @@
         <!-- Hidden file input, triggered programmatically -->
         <input type="file" id="audioFileInput4" accept="audio/*" style="display: none;">
         <audio id="audioPlayer4" controls style="display: none;"></audio>
-        <!--Gestione tracce-->
+
+        <!--Track management-->
         <div class="button-row">
             <button class="backward-button" onclick="backTracks()"></button>
             <button class="play-button"  onclick="playTracks()"></button>
@@ -76,8 +78,7 @@
                     <input id="th_knob" value="-50">
                         <div class="knob-label">THRESHOLD</div>
                         <div class="knob-value" id="th_value"></div>
-                    </input>
-                   
+                    </input>   
                 </div>
                 <div class="knob-container">
                     <div class="inner-circle"></div>
@@ -130,7 +131,7 @@
             </div> 
         </div>
 
-        <!--Tasti gestione traccia e compressione--> 
+        <!--Audio management--> 
         <div id="activate_comp">
             <div class="button-rowt">
                 <button id="resetKnobsButton">Knob Reset</button>
